@@ -1,23 +1,20 @@
 """
 Email extraction module for Outlook .msg and .eml files.
 
-Extracts text from email messages, preserving:
-- Subject line
-- From, To, CC, Date
-- Body text (plain + HTML)
-- Attachment info
+Uses command-line tools (msg-extractor) for memory efficiency with large attachments.
+Falls back to Python libraries for standard .eml files.
 
 Workflow:
-  1. Read .msg file (python-pptx or msg-extractor)
-  2. Extract headers and body
-  3. Combine into structured text
-  4. Return standardized format
+  1. Use msg-extractor CLI for .msg files (memory efficient)
+  2. Use email module for .eml files
+  3. Extract only text, skip attachments
 """
 
 import logging
+import subprocess
+import json
 from pathlib import Path
-from typing import Optional, Dict, List
-from datetime import datetime
+from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 def extract_from_msg(file_path: Path) -> Optional[Dict]:
     """
-    Extract text from Outlook .msg file.
+    Extract text from Outlook .msg file using msg-extractor CLI (memory efficient).
+    
+    Falls back to Python library if CLI not available.
     
     Args:
         file_path: Path to .msg file
@@ -36,53 +35,82 @@ def extract_from_msg(file_path: Path) -> Optional[Dict]:
         Standardized dict with text, title, source_type, metadata
         Returns None if extraction fails
     """
+    # Try CLI first (most memory efficient)
     try:
-        from email import message_from_binary_file
-        import olefile
+        result = subprocess.run(
+            ["msg-extractor", str(file_path)],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if result.returncode == 0:
+            # Parse extracted text
+            lines = result.stdout.split("\n")
+            subject = ""
+            from_addr = ""
+            to_addr = ""
+            cc_addr = ""
+            date_str = ""
+            body_start = 0
+            
+            # Parse headers
+            for i, line in enumerate(lines):
+                if line.startswith("Subject:"):
+                    subject = line[8:].strip()
+                elif line.startswith("From:"):
+                    from_addr = line[5:].strip()
+                elif line.startswith("To:"):
+                    to_addr = line[3:].strip()
+                elif line.startswith("Cc:"):
+                    cc_addr = line[3:].strip()
+                elif line.startswith("Date:"):
+                    date_str = line[5:].strip()
+                elif line.strip() == "":
+                    body_start = i + 1
+                    break
+            
+            body = "\n".join(lines[body_start:])[:50000]  # Limit to 50KB
+            
+            return {
+                "text": f"Subject: {subject}\nFrom: {from_addr}\nTo: {to_addr}\nCc: {cc_addr}\nDate: {date_str}\n\n{body}",
+                "title": f"Email: {subject}",
+                "source_type": "email",
+                "metadata": {
+                    "subject": subject,
+                    "from": from_addr,
+                    "to": to_addr,
+                    "cc": cc_addr,
+                    "date": date_str,
+                    "filename": file_path.name,
+                }
+            }
+    except (subprocess.TimeoutExpired, FileNotFoundError, Exception) as e:
+        logger.debug(f"CLI extraction failed, trying Python library: {e}")
+    
+    # Fallback to Python library
+    try:
+        import extract_msg
     except ImportError:
-        logger.error("olefile or email module not available for .msg extraction")
+        logger.error("extract-msg library not installed and msg-extractor CLI not found")
         return None
 
     try:
-        # Open OLE file (Outlook .msg files are OLE containers)
-        ole = olefile.OleFileIO(str(file_path))
-        
-        # Extract message stream
-        if not ole.exists("__substg1.0_011D0102"):
-            logger.warning(f"No message stream in {file_path}")
-            ole.close()
-            return None
-        
-        message_data = ole.openstream("__substg1.0_011D0102").read()
-        ole.close()
-        
-        # Parse email message
-        msg = message_from_binary_file(message_data)
+        # Extract message (don't load attachments to save memory)
+        msg = extract_msg.Message(str(file_path))
         
         # Extract fields
-        subject = msg.get("Subject", "(no subject)")
-        from_addr = msg.get("From", "unknown")
-        to_addr = msg.get("To", "")
-        cc_addr = msg.get("Cc", "")
-        date_str = msg.get("Date", "")
+        subject = msg.subject or "(no subject)"
+        from_addr = msg.sender or "unknown"
+        to_addr = msg.to or ""
+        cc_addr = msg.cc or ""
+        date_str = str(msg.date) if msg.date else ""
         
-        # Extract body
-        body = ""
-        if msg.is_multipart():
-            for part in msg.walk():
-                if part.get_content_type() == "text/plain":
-                    payload = part.get_payload(decode=True)
-                    if isinstance(payload, bytes):
-                        body = payload.decode("utf-8", errors="ignore")
-                    else:
-                        body = payload
-                    break
-        else:
-            payload = msg.get_payload(decode=True)
-            if isinstance(payload, bytes):
-                body = payload.decode("utf-8", errors="ignore")
-            else:
-                body = payload
+        # Extract body (extract-msg handles both plain and HTML)
+        body = msg.body or ""
+        
+        # Limit text size to first 50KB to avoid memory issues
+        if len(body) > 50000:
+            body = body[:50000] + "\n[... email truncated ...]"
         
         # Combine into formatted text
         text = f"Subject: {subject}\n"
@@ -93,7 +121,10 @@ def extract_from_msg(file_path: Path) -> Optional[Dict]:
             text += f"Cc: {cc_addr}\n"
         if date_str:
             text += f"Date: {date_str}\n"
-        text += "\n" + (body or "(empty body)")
+        text += "\n" + (body.strip() or "(empty body)")
+        
+        # Clean up message object to free memory
+        del msg
         
         return {
             "text": text.strip(),
@@ -155,6 +186,10 @@ def extract_from_eml(file_path: Path) -> Optional[Dict]:
             if isinstance(body, bytes):
                 body = body.decode("utf-8", errors="ignore")
         
+        # Limit text size to first 50KB to avoid memory issues
+        if len(body) > 50000:
+            body = body[:50000] + "\n[... email truncated ...]"
+        
         # Combine into formatted text
         text = f"Subject: {subject}\n"
         text += f"From: {from_addr}\n"
@@ -210,32 +245,31 @@ def extract_email(file_path: Path) -> Optional[Dict]:
 # Batch Email Processing
 # ========================
 
-def extract_emails_from_folder(folder_path: Path) -> List[Dict]:
+def extract_emails_from_folder(folder_path: Path):
     """
-    Extract all email files from a folder recursively.
+    Extract email files from a folder recursively (generator - streaming).
     
     Args:
         folder_path: Path to folder containing .msg and .eml files
     
-    Returns:
-        List of standardized email dicts
+    Yields:
+        Standardized email dicts (one at a time to avoid memory buildup)
     """
-    emails = []
-    
     if not folder_path.exists():
         logger.warning(f"Folder not found: {folder_path}")
-        return emails
+        return
     
     # Find all .msg and .eml files
+    count = 0
     for email_file in folder_path.rglob("*"):
         if email_file.suffix.lower() in [".msg", ".eml"]:
             extracted = extract_email(email_file)
             if extracted:
-                emails.append(extracted)
+                count += 1
+                yield extracted
                 logger.debug(f"Extracted: {email_file.name}")
     
-    logger.info(f"Extracted {len(emails)} emails from {folder_path}")
-    return emails
+    logger.info(f"Extracted {count} emails from {folder_path}")
 
 
 if __name__ == "__main__":
