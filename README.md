@@ -258,6 +258,36 @@ See `AGENTS.md` for conventions and how AI agents should approach development.
 
 ## Troubleshooting
 
+### Email Ingestion Memory Issues
+**Symptom:** Python process consumes 85%+ RAM when processing .msg files
+
+**Cause:** Outlook .msg files are OLE compound documents that load entire file into memory, including attachments. Large files (376KB-500KB) with attachments can spike memory usage.
+
+**Solutions (in order of preference):**
+
+1. **Use msg-extractor CLI tool** (most memory efficient)
+   ```bash
+   # Install: pip install msg-extractor
+   msg-extractor file.msg  # Extracts to JSON - uses subprocess (separate memory space)
+   ```
+
+2. **Convert .msg to .eml format first**
+   ```bash
+   # Use Outlook or online tools to batch convert
+   # .eml files are plain text - much more memory efficient
+   python -m api.ingest --email-dir "C:\ecm-staging\outlook"  # Now uses .eml files
+   ```
+
+3. **Increase system RAM**
+   - Each .msg file loads 300KB-400KB per file
+   - With 199 files, peak usage ~100MB but spikes higher with concurrent operations
+   - Recommend: 8GB+ RAM for this pipeline
+
+4. **Process in smaller batches**
+   ```bash
+   python -m api.ingest --email-dir "C:\ecm-staging\outlook" --batch-size 20
+   ```
+
 ### Docker services won't start
 ```bash
 docker-compose down -v
@@ -269,9 +299,6 @@ Check `api/config.py` — ensure `DATABASE_URL` matches docker-compose
 
 ### Qdrant vector search returns no results
 Run ingestion again: `python -m api.ingest --reset`
-
-### OCR failures
-See `C:\ecm-staging\inventory.csv` for action/error details
 
 ## License
 
