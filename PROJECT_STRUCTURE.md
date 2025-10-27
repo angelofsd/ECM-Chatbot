@@ -124,19 +124,18 @@ It uses a local **RAG pipeline** with:
 
 ## 6. Known Issues & Troubleshooting
 
-### 🔴 **Postgres Host Connection (Oct 27)**
-**Issue**: Running `python -m api.ingest` fails with `FATAL: password authentication failed` even though Postgres is running.
+### 🔴 **Postgres Host Connection (RESOLVED Oct 27)**
+**Issue**: Docker Postgres port 5432 wasn't binding to Windows host.
 
-**Root Cause**: Docker Postgres Alpine defaults to `scram-sha-256` password encryption and IPv6-first resolution. Windows localhost resolves to IPv6 (::1) which times out, then falls back to IPv4 with failed auth.
+**Solution**: Changed to non-standard port **15432** on host → 5432 in container
+- Updated `docker-compose.yml`: `ports: - "15432:5432"`
+- Updated `api/config.py`: `POSTGRES_PORT = "15432"`
+- Added `init-db.sql` for proper initialization
 
-**Workaround (temporary)**: 
-- Use `docker exec ecm_postgres psql -U postgres -d ecm_rag` to test inside container
-- Or set `POSTGRES_HOST_AUTH_METHOD=trust` in docker-compose and use Unix socket
+**Verification**: ✅ `docker ps` shows `0.0.0.0:15432->5432/tcp`
+**Test**: Run `python test_db_connection.py` → Should connect successfully
 
-**Next Steps**:
-1. Create custom `pg_hba.conf` for MD5 auth on 0.0.0.0
-2. Or use environment variables: `POSTGRES_PASSWORD=postgres` in host shell
-3. Consider WSL2 networking if on Windows Subsystem for Linux
+**Note**: Windows Docker Desktop has known issues binding standard ports (5432, 3306). Using non-standard ports (15432, 13306) typically resolves this.
 
 ### ✅ **Email Memory Management (RESOLVED Oct 27)**
 **Was**: 199 emails caused system memory spikes to 85-98% with streaming generators alone.
@@ -164,11 +163,14 @@ It uses a local **RAG pipeline** with:
 # Start Docker services
 docker-compose up -d
 
+# Test database connection
+python test_db_connection.py
+
 # Test email extraction (proof of concept)
 python ingest_emails_batch.py --email-dir "C:\ecm-staging\Outlook" --batch-size 50
 
-# Full ingestion (once Postgres auth fixed)
-python -m api.ingest --pdf-dir "C:\ecm-staging\04_text_ready" --email-dir "C:\ecm-staging\Outlook" --batch-size 50
+# Full ingestion (ready to test!)
+USE_SQLITE=false python -m api.ingest --pdf-dir "C:\ecm-staging\04_text_ready" --email-dir "C:\ecm-staging\Outlook" --batch-size 50
 
 # Start FastAPI dev server
 uvicorn api.main:app --reload
@@ -179,6 +181,7 @@ uvicorn api.main:app --reload
 
 ---
 
-**Last Updated**: Oct 27, 2025
-**Commit**: 07590f3 (Email batch ingestion + ingest.py refactor)
+**Last Updated**: Oct 27, 2025  
+**Commit**: 5e4a3d1 (Postgres port fix - 15432)  
+**Status**: ✅ Database connection working, ready for full ingestion test
             +----------------+
