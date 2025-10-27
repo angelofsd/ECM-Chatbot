@@ -137,6 +137,38 @@ from sqlalchemy.orm import sessionmaker
    ```
 4. **Update AGENTS.md current status** if phase changes
 
+## Multi-Source Ingestion Strategy
+
+### Supported Source Types
+1. **PDFs** – OCR'd and text-based documents (current)
+2. **Outlook Emails** – .msg files with subject, body, attachments
+3. **Future**: Word docs, spreadsheets, Teams chat exports
+
+### Architecture Principles
+- **Extensible**: Each source type has its own extractor module
+- **Unified pipeline**: All sources → chunks → embeddings → Qdrant + Postgres
+- **Metadata tracking**: `source_type` field in Document model to distinguish origins
+- **ACL by folder**: Emails in `Outlook/Claims/` → department="Claims"
+
+### Adding a New Source Type
+Example: Adding support for Word documents
+
+```python
+# api/extractors/word_extractor.py
+def extract_from_docx(file_path: Path) -> dict:
+    """Extract text from .docx file."""
+    from docx import Document
+    doc = Document(file_path)
+    text = "\n".join([p.text for p in doc.paragraphs])
+    return {
+        "text": text,
+        "title": file_path.stem,
+        "metadata": {"source_type": "word"}
+    }
+
+# Then in ingest.py: add to supported_formats list
+```
+
 ## Phase 1 Detailed Breakdown
 
 ### `api/config.py`

@@ -12,6 +12,14 @@ The chatbot uses a **local RAG pipeline** to provide accurate, cited answers fro
 - **Backend**: FastAPI for retrieval and LLM orchestration
 - **Frontend**: Next.js for interactive chat interface
 
+## Supported Document Sources
+
+- **PDFs** – OCR'd and text-based documents
+- **Outlook Emails** – .msg and .eml files with full header preservation
+- **Future** – Word docs (.docx), spreadsheets, Teams exports
+
+See [Multi-Source Strategy](#multi-source-ingestion) below.
+
 ## Quick Start
 
 ### Prerequisites
@@ -153,6 +161,90 @@ POST /query
   Returns: { "answer": "...", "sources": [...], "confidence": 0.92 }
 ```
 
+## Multi-Source Ingestion
+
+The ingestion pipeline supports multiple document types with unified processing:
+
+### Supported Sources
+
+1. **PDFs** (`/04_text_ready/`)
+   - OCR'd scanned documents
+   - Native text PDFs
+   - Automatically detected via MIME type
+
+2. **Outlook Emails** (`/outlook/`)
+   - `.msg` files (Outlook format)
+   - `.eml` files (Standard RFC 822)
+   - Full metadata preserved (From, To, CC, Date, Subject)
+   - Body text + headers in searchable format
+
+### Folder Structure
+
+```
+C:\ecm-staging\
+├── 04_text_ready/        # OCR'd PDFs (Phase 0 output)
+│   ├── Claims/
+│   ├── Underwriting/
+│   └── ...
+└── outlook/              # Email files (to add)
+    ├── Claims/           # Dept-based folder → ACL tag
+    │   ├── email1.msg
+    │   └── email2.eml
+    ├── Underwriting/
+    └── ...
+```
+
+### Usage
+
+**Ingest PDFs only (Phase 0 output):**
+```bash
+python -m api.ingest --pdf-dir "C:\ecm-staging\04_text_ready"
+```
+
+**Ingest emails only:**
+```bash
+python -m api.ingest --email-dir "C:\ecm-staging\outlook"
+```
+
+**Ingest both PDFs and emails:**
+```bash
+python -m api.ingest \
+  --pdf-dir "C:\ecm-staging\04_text_ready" \
+  --email-dir "C:\ecm-staging\outlook"
+```
+
+**Sample mode (process only first 5 files):**
+```bash
+python -m api.ingest --sample 5
+```
+
+### Adding New Source Types
+
+Each source type has an extractor module in `/api/extractors/`:
+
+```python
+# api/extractors/word_extractor.py
+def extract_from_docx(file_path: Path) -> Optional[Dict]:
+    """Extract text from .docx file."""
+    from docx import Document
+    doc = Document(file_path)
+    text = "\n".join([p.text for p in doc.paragraphs])
+    return {
+        "text": text,
+        "title": file_path.stem,
+        "source_type": "word",
+        "metadata": {"filename": file_path.name}
+    }
+```
+
+Then register in `ingest.py`:
+```python
+def extract_content(file_path, source_type):
+    if source_type == "word":
+        return extract_from_docx(file_path)
+    # ...
+```
+
 ## Contributing
 
 1. Create a feature branch: `git checkout -b feature/your-feature`
@@ -176,7 +268,7 @@ docker-compose up -d
 Check `api/config.py` — ensure `DATABASE_URL` matches docker-compose
 
 ### Qdrant vector search returns no results
-Run ingestion again: `python -m api.ingest_pdf --reset`
+Run ingestion again: `python -m api.ingest --reset`
 
 ### OCR failures
 See `C:\ecm-staging\inventory.csv` for action/error details

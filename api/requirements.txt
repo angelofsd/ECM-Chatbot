@@ -27,6 +27,11 @@ pypdf==3.17.1
 langchain==0.1.4
 langchain-community==0.0.6
 
+# Email Processing
+python-email-validator==2.1.0
+olefile==0.47  # For reading Outlook .msg files
+extract-msg==0.47.1  # Alternative for .msg extraction
+
 # Search
 rank-bm25==0.2.2
 

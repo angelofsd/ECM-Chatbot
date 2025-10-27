@@ -52,13 +52,16 @@ class User(Base):
 
 
 class Document(Base):
-    """PDF document metadata and indexing status."""
+    """Document metadata and indexing status."""
     __tablename__ = "documents"
 
     id = Column(Integer, primary_key=True)
     filename = Column(String(500), nullable=False)
     source_path = Column(String(1000), unique=True, nullable=False)
     relative_path = Column(String(1000), nullable=False)
+    
+    # Source type (pdf, email, word, etc.)
+    source_type = Column(String(50), default="pdf")
     
     # File metadata
     size_bytes = Column(Integer, nullable=False)
