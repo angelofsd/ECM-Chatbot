@@ -16,8 +16,9 @@ Supports:
 
 import os
 import logging
+import gc
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Generator
 import argparse
 
 from tqdm import tqdm
@@ -25,7 +26,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 # Local imports
-from config import (
+from api.config import (
     OCR_OUTPUT_DIR,
     QDRANT_URL,
     QDRANT_COLLECTION,
@@ -35,8 +36,8 @@ from config import (
     CHUNK_OVERLAP,
     LOG_LEVEL,
 )
-from db import db, Document, Chunk, add_document, add_chunk
-from extractors.email_extractor import extract_email, extract_emails_from_folder
+from api.db import db, Document, Chunk, add_document, add_chunk
+from api.extractors.email_extractor import extract_email, extract_emails_from_folder
 
 logger = logging.getLogger(__name__)
 logger.setLevel(LOG_LEVEL)
@@ -302,8 +303,15 @@ def ingest_document(file_path: Path, source_type: str, department: str) -> Tuple
 # Main Pipeline
 # ========================
 
-def main(pdf_dir: Optional[Path] = None, email_dir: Optional[Path] = None, sample: Optional[int] = None):
-    """Main ingestion pipeline for all source types."""
+def main(pdf_dir: Optional[Path] = None, email_dir: Optional[Path] = None, sample: Optional[int] = None, batch_size: int = 50):
+    """Main ingestion pipeline for all source types.
+    
+    Args:
+        pdf_dir: Path to PDF directory
+        email_dir: Path to email directory
+        sample: Limit processing to first N documents
+        batch_size: For emails, process in batches with gc.collect() between batches (default 50)
+    """
     
     logger.info("Initializing database...")
     db.init_sync()
@@ -338,16 +346,49 @@ def main(pdf_dir: Optional[Path] = None, email_dir: Optional[Path] = None, sampl
     success = 0
     failed = 0
     
-    with tqdm(total=len(all_docs), desc="Ingesting") as pbar:
-        for file_path, department, source_type in all_docs:
-            ok, msg = ingest_document(file_path, source_type, department)
-            if ok:
-                success += 1
-                pbar.write(f"✓ {file_path.name}: {msg}")
-            else:
-                failed += 1
-                pbar.write(f"✗ {file_path.name}: {msg}")
-            pbar.update(1)
+    # Separate PDFs and emails for batch processing
+    pdf_docs = [(p, d, s) for p, d, s in all_docs if s == "pdf"]
+    email_docs = [(p, d, s) for p, d, s in all_docs if s == "email"]
+    
+    # Process PDFs first (no batching needed)
+    if pdf_docs:
+        logger.info(f"\n📄 Processing {len(pdf_docs)} PDFs...")
+        with tqdm(total=len(pdf_docs), desc="PDFs", position=0) as pbar:
+            for file_path, department, source_type in pdf_docs:
+                ok, msg = ingest_document(file_path, source_type, department)
+                if ok:
+                    success += 1
+                    pbar.write(f"✓ {file_path.name}")
+                else:
+                    failed += 1
+                    pbar.write(f"✗ {file_path.name}: {msg}")
+                pbar.update(1)
+    
+    # Process emails in batches with memory management
+    if email_docs:
+        logger.info(f"\n📧 Processing {len(email_docs)} emails (batch_size={batch_size})...")
+        
+        for batch_start in range(0, len(email_docs), batch_size):
+            batch_end = min(batch_start + batch_size, len(email_docs))
+            batch_num = batch_start // batch_size + 1
+            total_batches = (len(email_docs) + batch_size - 1) // batch_size
+            
+            logger.info(f"\nBatch {batch_num}/{total_batches} ({batch_start + 1}-{batch_end} of {len(email_docs)})")
+            
+            with tqdm(total=batch_end - batch_start, desc=f"Batch {batch_num}", position=0) as pbar:
+                for i, (file_path, department, source_type) in enumerate(email_docs[batch_start:batch_end]):
+                    ok, msg = ingest_document(file_path, source_type, department)
+                    if ok:
+                        success += 1
+                        pbar.write(f"✓ {file_path.name}")
+                    else:
+                        failed += 1
+                        pbar.write(f"✗ {file_path.name}: {msg}")
+                    pbar.update(1)
+            
+            # Force garbage collection between batches
+            logger.debug(f"Cleaning up memory after batch {batch_num}...")
+            gc.collect()
     
     logger.info(f"\n✓ Complete: {success} success, {failed} failed")
 
@@ -357,6 +398,7 @@ if __name__ == "__main__":
     parser.add_argument("--pdf-dir", type=Path, default=OCR_OUTPUT_DIR, help="PDF directory")
     parser.add_argument("--email-dir", type=Path, help="Email directory")
     parser.add_argument("--sample", type=int, help="Process only first N files")
+    parser.add_argument("--batch-size", type=int, default=50, help="Email batch size for memory management (default 50)")
     args = parser.parse_args()
     
-    main(pdf_dir=args.pdf_dir, email_dir=args.email_dir, sample=args.sample)
+    main(pdf_dir=args.pdf_dir, email_dir=args.email_dir, sample=args.sample, batch_size=args.batch_size)

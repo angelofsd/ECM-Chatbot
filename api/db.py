@@ -19,7 +19,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
-from config import DATABASE_URL, DATABASE_URL_ASYNC, LOG_LEVEL
+from api.config import DATABASE_URL, DATABASE_URL_ASYNC, LOG_LEVEL
 
 import logging
 
