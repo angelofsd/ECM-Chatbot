@@ -8,10 +8,12 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: ecm_rag
+      POSTGRES_HOST_AUTH_METHOD: md5  # Use MD5 for simpler password auth
     ports:
-      - "5432:5432"
+      - "15432:5432"  # Use non-standard host port to avoid conflicts
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
