@@ -7,6 +7,10 @@ All paths and credentials should be configured here.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file if it exists
+load_dotenv()
 
 # ========================
 # Database Configuration
@@ -53,19 +57,31 @@ INVENTORY_CSV = Path(os.getenv(
 # ========================
 # Embedding Model
 # ========================
-# BGE small model (lightweight, local)
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
-EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "384"))
-
 # Option to use OpenAI embeddings (requires OPENAI_API_KEY)
 USE_OPENAI_EMBEDDINGS = os.getenv("USE_OPENAI_EMBEDDINGS", "false").lower() == "true"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
+if USE_OPENAI_EMBEDDINGS:
+    # OpenAI text-embedding-3-small (1536 dimensions, most cost-effective)
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "1536"))
+else:
+    # BGE small model (lightweight, local)
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "BAAI/bge-small-en-v1.5")
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+
 # ========================
 # Chunking Parameters
 # ========================
-CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "300"))  # tokens
-CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))  # tokens
+CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "500"))  # tokens (was 300)
+CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "75"))  # tokens (was 50)
+CHUNK_LIMIT = int(os.getenv("CHUNK_LIMIT", "200"))
+
+# ========================
+# Ingestion Performance Tuning
+# ========================
+EMBEDDING_MINI_BATCH_SIZE = int(os.getenv("EMBEDDING_MINI_BATCH_SIZE", "40"))
+EMBEDDING_API_BATCH_SIZE = int(os.getenv("EMBEDDING_API_BATCH_SIZE", "100"))
 
 # ========================
 # Retrieval Parameters

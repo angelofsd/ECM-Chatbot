@@ -6,18 +6,22 @@ This document is a "constitution" for development on this project, ensuring that
 
 Build a **local RAG chatbot** that answers questions about ECM replacement using OCR'd internal documents, with proper ACL enforcement and citations.
 
-## Current Status (as of Oct 27, 2025)
+## Current Status (as of Oct 28, 2025)
 
 ✅ **Phase 0 Complete:**
 - 262 PDFs processed via `ocr_prepare.py`
 - 58 scanned PDFs → OCR'd with Tesseract
-- 199 PDFs → pass-through (already had text)
+- 204 PDFs → pass-through (already had text)
 - Output: `C:\ecm-staging\04_text_ready` + inventory.csv
 
-🧱 **Phase 1 In Progress:**
-- Building ingestion pipeline (`/api`)
-- Postgres schema + Qdrant integration
-- FastAPI endpoints for /ingest and /query
+✅ **Phase 1 Complete:**
+- **261 documents indexed** (99.6% success rate)
+- **3,122 text chunks** with OpenAI embeddings (text-embedding-3-small, 1536d)
+- **19 minutes total ingestion time** (20 parallel workers)
+- Production-ready pipeline with memory optimization and resume capability
+- Tools: `/ingest_pool.py`, `/rebuild_vectors.py`
+
+🚀 **Phase 2 Next:** LLM integration (`api/llm.py` + `api/answer_generator.py`)
 
 ## Key Principles
 
@@ -239,7 +243,10 @@ def extract_from_docx(file_path: Path) -> dict:
 | Hardcoded paths | Move to `config.py` and commit |
 | No tests, unclear if it works | Manual testing + document results in commit |
 | Postgres errors | Check docker, check connection string, check schema |
-| Vector search returns nothing | Re-run ingestion with `--force-reindex` |
+| Vector search returns nothing | Re-run ingestion with `--force-reindex` or use `rebuild_vectors.py` |
+| Memory spike during ingestion | Lower `--workers` count, check `EMBEDDING_MINI_BATCH_SIZE` |
+| Transaction rollback / data loss | **NEVER use delete-then-recreate patterns**—use `TRUNCATE` or upserts |
+| Stale Qdrant vectors after DB clear | Run `USE_SQLITE=false python rebuild_vectors.py` |
 
 ## Questions to Ask Before Committing
 

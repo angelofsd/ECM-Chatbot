@@ -1,0 +1,23 @@
+PDFs:   0%|          | 0/3 [00:00<?, ?it/s]Failed to ingest C:\ecm-staging\04_text_ready\Comparison of OT, Hyland, AODOCs and Box.pdf: (psycopg2.errors.UniqueViolation) duplicate key value violates unique constraint "documents_source_path_key"
+DETAIL:  Key (source_path)=(C:\ecm-staging\04_text_ready\Comparison of OT, Hyland, AODOCs and Box.pdf) already exists.
+
+[SQL: INSERT INTO documents (filename, source_path, relative_path, source_type, size_bytes, sha256, last_modified, needs_ocr, ocr_status, indexed, indexed_at, chunk_count, department, acl_tags, created_at, updated_at) VALUES (%(filename)s, %(source_path)s, %(relative_path)s, %(source_type)s, %(size_bytes)s, %(sha256)s, %(last_modified)s, %(needs_ocr)s, %(ocr_status)s, %(indexed)s, %(indexed_at)s, %(chunk_count)s, %(department)s, %(acl_tags)s, %(created_at)s, %(updated_at)s) RETURNING documents.id]
+[parameters: {'filename': 'Comparison of OT, Hyland, AODOCs and Box.pdf', 'source_path': 'C:\\ecm-staging\\04_text_ready\\Comparison of OT, Hyland, AODOCs and Box.pdf', 'relative_path': '04_text_ready\\Comparison of OT, Hyland, AODOCs and Box.pdf', 'source_type': 'pdf', 'size_bytes': 148414, 'sha256': '', 'last_modified': None, 'needs_ocr': False, 'ocr_status': 'pending', 'indexed': False, 'indexed_at': None, 'chunk_count': 0, 'department': 'General', 'acl_tags': 'General', 'created_at': datetime.datetime(2025, 10, 28, 12, 50, 52, 121703), 'updated_at': datetime.datetime(2025, 10, 28, 12, 50, 52, 121709)}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+                                           PDFs:   0%|          | 0/3 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\angela\dev\ECM-Chatbot\api\ingest.py", line 404, in <module>
+    main(pdf_dir=args.pdf_dir, email_dir=args.email_dir, sample=args.sample, batch_size=args.batch_size)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\angela\dev\ECM-Chatbot\api\ingest.py", line 364, in main
+    pbar.write(f"\u2717 {file_path.name}: {msg}")
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\angela\AppData\Local\Programs\Python\Python313\Lib\site-packages\tqdm\std.py", line 722, in write
+    fp.write(s)
+    ~~~~~~~~^^^
+  File "C:\Users\angela\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2717' in position 0: character maps to <undefined>

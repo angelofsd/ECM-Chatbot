@@ -25,9 +25,9 @@ See [Multi-Source Strategy](#multi-source-ingestion) below.
 ### Prerequisites
 
 - Python 3.11+
-- Node.js 18+
 - Docker & Docker Compose (for Qdrant, Postgres)
-- Tesseract + Ghostscript (for OCR)
+- Tesseract + Ghostscript (for OCR, Phase 0 only)
+- OpenAI API key (for embeddings)
 
 ### Setup
 
@@ -37,39 +37,43 @@ See [Multi-Source Strategy](#multi-source-ingestion) below.
    cd ECM-Chatbot
    ```
 
-2. **Start infrastructure (Qdrant + Postgres)**
+2. **Set up environment variables**
+   ```bash
+   # Create .env file in project root
+   echo "OPENAI_API_KEY=your-key-here" > .env
+   ```
+
+3. **Start infrastructure (Qdrant + Postgres)**
    ```bash
    docker-compose up -d
    ```
 
-3. **Install Python dependencies**
+4. **Install Python dependencies**
    ```bash
-   cd api
-   pip install -r requirements.txt
+   pip install -r api/requirements.txt
    ```
 
-4. **Prepare documents (if not already done)**
+5. **Ingest documents (parallel, recommended)**
    ```bash
-   python ocr_prepare.py
-   # Output: C:\ecm-staging\04_text_ready + inventory.csv
+   python ingest_pool.py --workers 20
+   # Completed in ~19 minutes for 262 PDFs
    ```
 
-5. **Ingest documents into vector store**
+6. **Verify ingestion**
    ```bash
-   python -m api.ingest_pdf
+   docker exec ecm_postgres psql -U postgres -d ecm_rag -c \
+     "SELECT COUNT(*) as docs, SUM(chunk_count) as chunks FROM documents;"
+   # Expected: 261 docs, 3122 chunks
    ```
 
-6. **Start FastAPI backend**
+7. **Start FastAPI backend** (Phase 2)
    ```bash
    uvicorn api.main:app --reload --port 8000
    ```
 
-7. **In a new terminal, start Next.js frontend**
+8. **Test API** (Phase 2)
    ```bash
-   cd ui
-   npm install
-   npm run dev
-   # Navigate to http://localhost:3000
+   # Navigate to http://localhost:8000/docs
    ```
 
 ## Project Structure
@@ -79,35 +83,43 @@ ECM-Chatbot/
 ├── README.md                      # This file
 ├── AGENTS.md                      # Guide for AI agents and collaborators
 ├── PROJECT_STRUCTURE.md           # Detailed architecture & phases
-├── ocr_prepare.py                 # Document OCR and inventory pipeline
+├── ocr_prepare.py                 # Phase 0: Document OCR and inventory
+├── ingest_pool.py                 # Phase 1: Parallel PDF ingestion (PRIMARY TOOL)
+├── rebuild_vectors.py             # Phase 1: Re-upload vectors to Qdrant from Postgres
+├── ingest_emails_batch.py         # Phase 2: Email ingestion (ready for use)
 ├── api/
 │   ├── __init__.py
-│   ├── config.py                  # Configuration (env vars, paths)
+│   ├── config.py                  # Configuration (env vars, paths, OpenAI key)
 │   ├── db.py                      # Postgres schema & ORM models
-│   ├── ingest_pdf.py              # Document ingestion & embedding
+│   ├── ingest.py                  # Core ingestion pipeline with memory guards
+│   ├── embeddings.py              # OpenAI + local embedding generators
+│   ├── extractors/
+│   │   ├── email_extractor.py     # .msg/.eml processing
+│   │   └── pdf_extractor.py       # PDF text extraction
 │   ├── retriever.py               # Vector search & hybrid retrieval
 │   ├── security.py                # Auth middleware & token validation
 │   ├── main.py                    # FastAPI app & routes
 │   └── requirements.txt           # Python dependencies
-├── ui/
-│   ├── app/
-│   │   ├── page.tsx               # Main chat UI
-│   │   └── api/query/route.ts     # Next.js server action
-│   ├── components/
-│   │   └── ChatMessage.tsx        # Chat UI components
-│   ├── package.json
-│   └── env.local                  # Frontend env vars
-├── docker-compose.yml             # Local services (Qdrant, Postgres)
-└── .gitignore
+├── docker-compose.yml             # Postgres + Qdrant services
+└── .env                           # Environment variables (OPENAI_API_KEY)
 ```
 
 ## Key Concepts
 
 ### RAG Pipeline
 
-1. **Ingestion**: OCR'd PDFs → chunked → embedded (BGE model) → stored in Qdrant + Postgres
-2. **Retrieval**: User query → embedded → hybrid search (vector + BM25) → reranked → top-k chunks
-3. **Generation**: Retrieved context + prompt → LLM (OpenAI) → final answer with citations
+1. **Ingestion**: OCR'd PDFs → chunked (500 tokens, 75 overlap) → embedded (OpenAI text-embedding-3-small) → stored in Qdrant + Postgres
+2. **Retrieval** (Phase 2): User query → embedded → hybrid search (vector + BM25) → reranked → top-k chunks
+3. **Generation** (Phase 2): Retrieved context + prompt → LLM (OpenAI GPT-4) → final answer with citations
+
+### Current Stats
+
+- **261 documents indexed** (99.6% success rate)
+- **3,122 text chunks** (avg ~12 chunks per document)
+- **3,122 embeddings** (OpenAI text-embedding-3-small, 1536 dimensions)
+- **Ingestion time**: 19 minutes with 20 parallel workers
+- **Database**: Postgres on port 15432 (Windows Docker workaround)
+- **Vector store**: Qdrant on ports 6333-6334
 
 ### ACL & Security
 
@@ -127,31 +139,32 @@ ECM-Chatbot/
 
 ### Current Phase
 
-**Phase 1 — Ingestion & Indexing** (in progress)
-- `db.py`: Postgres schema for documents, chunks, users, ACLs
-- `ingest_pdf.py`: Load OCR'd PDFs, chunk, embed, write to Qdrant
-- `retriever.py`: Vector + BM25 hybrid search with filtering
-- `main.py`: FastAPI routes `/ingest`, `/query`, `/health`
+**Phase 1 — Ingestion & Indexing** ✅ COMPLETE (Oct 28, 2025)
+- ✅ `db.py`: Postgres schema for documents, chunks, users, ACLs
+- ✅ `ingest.py`: Memory-hardened ingestion with 500-token chunks, 40-chunk mini-batches
+- ✅ `ingest_pool.py`: Parallel orchestrator with ProcessPoolExecutor (4-20 workers tested)
+- ✅ `rebuild_vectors.py`: Utility to re-upload vectors from Postgres to Qdrant
+- ✅ `embeddings.py`: OpenAI text-embedding-3-small integration
+- ✅ 261 PDFs indexed in 19 minutes
 
 ### Next Phases
 
-- **Phase 2**: Reranking, LLM integration, evaluation
+- **Phase 2 (Next)**: LLM integration
+  - `api/llm.py`: OpenAI GPT-4 connector
+  - `api/answer_generator.py`: RAG prompt builder with citations
+  - Test retrieval with sample queries
 - **Phase 3**: Next.js frontend with citations & session history
 - **Phase 4**: Docker deployment, monitoring, backups
 
 See `PROJECT_STRUCTURE.md` for detailed roadmap.
 
-## API Endpoints (Phase 1+)
+## API Endpoints (Phase 2+)
 
 ```bash
-# Health check
+# Health check (available now)
 GET /health
 
-# Ingest documents (admin only)
-POST /ingest
-  { "collection": "ecm_docs", "force_reindex": false }
-
-# Query documents with RAG
+# Query documents with RAG (Phase 2 - in development)
 POST /query
   { 
     "query": "What is the timeline for ECM replacement?",
@@ -196,26 +209,21 @@ C:\ecm-staging\
 
 ### Usage
 
-**Ingest PDFs only (Phase 0 output):**
+**Ingest PDFs (primary tool - parallel processing):**
 ```bash
-python -m api.ingest --pdf-dir "C:\ecm-staging\04_text_ready"
+python ingest_pool.py --workers 20                       # Full speed (recommended for 32GB RAM)
+python ingest_pool.py --workers 4 --max-pdfs 50          # Process 50 PDFs only
+python ingest_pool.py --workers 8 --dry-run              # Preview what would be ingested
 ```
 
-**Ingest emails only:**
+**Rebuild Qdrant vectors (if needed):**
 ```bash
-python -m api.ingest --email-dir "C:\ecm-staging\outlook"
+USE_SQLITE=false python rebuild_vectors.py
 ```
 
-**Ingest both PDFs and emails:**
+**Ingest emails (Phase 2, not yet integrated):**
 ```bash
-python -m api.ingest \
-  --pdf-dir "C:\ecm-staging\04_text_ready" \
-  --email-dir "C:\ecm-staging\outlook"
-```
-
-**Sample mode (process only first 5 files):**
-```bash
-python -m api.ingest --sample 5
+python ingest_emails_batch.py --email-dir "C:\ecm-staging\Outlook" --batch-size 50
 ```
 
 ### Adding New Source Types
@@ -258,47 +266,40 @@ See `AGENTS.md` for conventions and how AI agents should approach development.
 
 ## Troubleshooting
 
-### Email Ingestion Memory Issues
-**Symptom:** Python process consumes 85%+ RAM when processing .msg files
+### Postgres Connection Issues
+**Symptom:** Can't connect to database from Python scripts
 
-**Cause:** Outlook .msg files are OLE compound documents that load entire file into memory, including attachments. Large files (376KB-500KB) with attachments can spike memory usage.
+**Solution:** Windows Docker Desktop has issues with standard ports. We use port 15432 instead:
+```bash
+# Verify Postgres is running
+docker ps | grep ecm_postgres
+# Should show: 0.0.0.0:15432->5432/tcp
 
-**Solutions (in order of preference):**
+# Test connection
+docker exec ecm_postgres psql -U postgres -d ecm_rag -c "SELECT 1;"
+```
 
-1. **Use msg-extractor CLI tool** (most memory efficient)
-   ```bash
-   # Install: pip install msg-extractor
-   msg-extractor file.msg  # Extracts to JSON - uses subprocess (separate memory space)
-   ```
+### Stale Qdrant Vectors
+**Symptom:** Qdrant has more vectors than Postgres has chunks
 
-2. **Convert .msg to .eml format first**
-   ```bash
-   # Use Outlook or online tools to batch convert
-   # .eml files are plain text - much more memory efficient
-   python -m api.ingest --email-dir "C:\ecm-staging\outlook"  # Now uses .eml files
-   ```
+**Solution:** Clear and rebuild vectors from Postgres:
+```bash
+USE_SQLITE=false python rebuild_vectors.py
+```
 
-3. **Increase system RAM**
-   - Each .msg file loads 300KB-400KB per file
-   - With 199 files, peak usage ~100MB but spikes higher with concurrent operations
-   - Recommend: 8GB+ RAM for this pipeline
+### Memory Issues During Ingestion
+**Symptom:** Python process exceeds 85% RAM
 
-4. **Process in smaller batches**
-   ```bash
-   python -m api.ingest --email-dir "C:\ecm-staging\outlook" --batch-size 20
-   ```
+**Solution:** Reduce parallel workers:
+```bash
+python ingest_pool.py --workers 8  # Down from 20
+```
 
-### Docker services won't start
+### Docker Services Won't Start
 ```bash
 docker-compose down -v
 docker-compose up -d
 ```
-
-### Postgres connection error
-Check `api/config.py` — ensure `DATABASE_URL` matches docker-compose
-
-### Qdrant vector search returns no results
-Run ingestion again: `python -m api.ingest --reset`
 
 ## License
 
@@ -306,4 +307,4 @@ Internal use only — New Mexico Mutual
 
 ## Contact
 
-Angela — angelofsd@github.com
+Angel Acosta— angelofsd@github.com

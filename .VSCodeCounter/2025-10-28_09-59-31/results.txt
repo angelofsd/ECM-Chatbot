@@ -1,0 +1,77 @@
+Date : 2025-10-28 09:59:31
+Directory : c:\Users\angela\dev\ECM-Chatbot
+Total : 41 files,  3529 codes, 983 comments, 1066 blanks, all 5578 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Python           |         27 |      2,547 |        920 |        751 |      4,218 |
+| Markdown         |          4 |        714 |          0 |        228 |        942 |
+| Shell Script     |          3 |         97 |         22 |         38 |        157 |
+| Batch            |          2 |         67 |         13 |         22 |        102 |
+| YAML             |          1 |         38 |          0 |          4 |         42 |
+| pip requirements |          1 |         31 |         12 |         11 |         54 |
+| Ignore           |          1 |         28 |          8 |          8 |         44 |
+| Properties       |          1 |          5 |          4 |          1 |         10 |
+| MS SQL           |          1 |          2 |          4 |          3 |          9 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                              | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                 |         41 |      3,529 |        983 |      1,066 |      5,578 |
+| . (Files)                                                         |         29 |      1,947 |        234 |        567 |      2,748 |
+| api                                                               |         12 |      1,582 |        749 |        499 |      2,830 |
+| api (Files)                                                       |         10 |      1,404 |        666 |        461 |      2,531 |
+| api\extractors                                                    |          2 |        178 |         83 |         38 |        299 |
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                          | language         | code       | comment    | blank      | total      |
++-------------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\angela\dev\ECM-Chatbot\.dockerignore                     | Ignore           |         28 |          8 |          8 |         44 |
+| c:\Users\angela\dev\ECM-Chatbot\AGENTS.md                         | Markdown         |        214 |          0 |         68 |        282 |
+| c:\Users\angela\dev\ECM-Chatbot\INGEST_NO_GIT.bat                 | Batch            |         37 |          6 |         12 |         55 |
+| c:\Users\angela\dev\ECM-Chatbot\OPENAI_SETUP.md                   | Markdown         |        114 |          0 |         48 |        162 |
+| c:\Users\angela\dev\ECM-Chatbot\PROJECT_STRUCTURE.md              | Markdown         |        148 |          0 |         40 |        188 |
+| c:\Users\angela\dev\ECM-Chatbot\README.md                         | Markdown         |        238 |          0 |         72 |        310 |
+| c:\Users\angela\dev\ECM-Chatbot\api\__init__.py                   | Python           |          1 |          9 |          2 |         12 |
+| c:\Users\angela\dev\ECM-Chatbot\api\config.py                     | Python           |         77 |         50 |         23 |        150 |
+| c:\Users\angela\dev\ECM-Chatbot\api\db.py                         | Python           |        177 |         66 |         65 |        308 |
+| c:\Users\angela\dev\ECM-Chatbot\api\embeddings.py                 | Python           |        119 |         54 |         40 |        213 |
+| c:\Users\angela\dev\ECM-Chatbot\api\extractors\__init__.py        | Python           |          0 |         11 |          1 |         12 |
+| c:\Users\angela\dev\ECM-Chatbot\api\extractors\email_extractor.py | Python           |        178 |         72 |         37 |        287 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest.py                     | Python           |        319 |        109 |         96 |        524 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest_pdf.py                 | Python           |        222 |         86 |         62 |        370 |
+| c:\Users\angela\dev\ECM-Chatbot\api\main.py                       | Python           |        169 |         90 |         61 |        320 |
+| c:\Users\angela\dev\ECM-Chatbot\api\requirements.txt              | pip requirements |         31 |         12 |         11 |         54 |
+| c:\Users\angela\dev\ECM-Chatbot\api\retriever.py                  | Python           |        195 |        119 |         65 |        379 |
+| c:\Users\angela\dev\ECM-Chatbot\api\security.py                   | Python           |         94 |         71 |         36 |        201 |
+| c:\Users\angela\dev\ECM-Chatbot\diagnose_memory.py                | Python           |         58 |         11 |         19 |         88 |
+| c:\Users\angela\dev\ECM-Chatbot\docker-compose.yml                | YAML             |         38 |          0 |          4 |         42 |
+| c:\Users\angela\dev\ECM-Chatbot\docker-init-db.sh                 | Shell Script     |          6 |          3 |          2 |         11 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_batches.sh                 | Shell Script     |         60 |          7 |         22 |         89 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_conservative.py            | Python           |         61 |         13 |         21 |         95 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_emails_batch.py            | Python           |        112 |         29 |         35 |        176 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_safe.py                    | Python           |         75 |         12 |         17 |        104 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_sqlite.py                  | Python           |         26 |          6 |         10 |         42 |
+| c:\Users\angela\dev\ECM-Chatbot\init-db.sql                       | MS SQL           |          2 |          4 |          3 |          9 |
+| c:\Users\angela\dev\ECM-Chatbot\ocr_prepare.py                    | Python           |        154 |         13 |         21 |        188 |
+| c:\Users\angela\dev\ECM-Chatbot\pg_hba.conf                       | Properties       |          5 |          4 |          1 |         10 |
+| c:\Users\angela\dev\ECM-Chatbot\run_ingestion.bat                 | Batch            |         30 |          7 |         10 |         47 |
+| c:\Users\angela\dev\ECM-Chatbot\run_ingestion.sh                  | Shell Script     |         31 |         12 |         14 |         57 |
+| c:\Users\angela\dev\ECM-Chatbot\test_db_connection.py             | Python           |         24 |          3 |          7 |         34 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_extraction.py          | Python           |         21 |          5 |          7 |         33 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_extraction_full.py     | Python           |         50 |          8 |         18 |         76 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_extraction_lite.py     | Python           |         62 |         14 |         15 |         91 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_ingest.py              | Python           |         17 |          4 |          6 |         27 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_ingestion.py           | Python           |         54 |         15 |         15 |         84 |
+| c:\Users\angela\dev\ECM-Chatbot\test_email_pipeline.py            | Python           |         60 |         24 |         21 |        105 |
+| c:\Users\angela\dev\ECM-Chatbot\test_memory_trace.py              | Python           |         69 |          3 |         16 |         88 |
+| c:\Users\angela\dev\ECM-Chatbot\test_minimal_ingest.py            | Python           |         86 |          9 |         16 |        111 |
+| c:\Users\angela\dev\ECM-Chatbot\test_openai_embeddings.py         | Python           |         67 |         14 |         19 |        100 |
+| Total                                                             |                  |      3,529 |        983 |      1,066 |      5,578 |
++-------------------------------------------------------------------+------------------+------------+------------+------------+------------+

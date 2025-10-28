@@ -1,0 +1,79 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Environment files
+.env
+.env.local
+*.env
+
+# Batch scripts with hardcoded keys (use .env instead)
+INGEST_NO_GIT.bat
+ingest_batches.sh
+run_ingestion.sh
+run_ingestion.bat
+
+# Logs
+*.log
+logs/
+ingestion.log
+ingest_log.txt
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker volumes (if local)
+postgres_data/
+qdrant_data/
+
+# Staging directories - EXCLUDE THESE FROM GIT
+C:/ecm-staging/
+/ecm-staging/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini

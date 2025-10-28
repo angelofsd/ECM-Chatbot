@@ -65,7 +65,7 @@ class Document(Base):
     
     # File metadata
     size_bytes = Column(Integer, nullable=False)
-    sha256 = Column(String(64), nullable=False, unique=True)
+    sha256 = Column(String(64), nullable=True, unique=False)  # Optional, not unique
     last_modified = Column(DateTime, nullable=True)
     
     # OCR info
@@ -247,8 +247,8 @@ def add_document(
     sha256: str,
     department: str = None,
     acl_tags: str = None,
-) -> Document:
-    """Add a new document."""
+) -> int:
+    """Add a new document and return its ID."""
     session = db.get_session()
     doc = Document(
         filename=filename,
@@ -261,9 +261,11 @@ def add_document(
     )
     session.add(doc)
     session.commit()
+    # Get the ID before closing session
+    doc_id = doc.id
     session.close()
-    logger.info(f"Added document: {filename}")
-    return doc
+    logger.info(f"Added document: {filename} (ID: {doc_id})")
+    return doc_id  # Return ID instead of detached object
 
 
 def add_chunk(document_id: int, text: str, sequence: int, qdrant_id: str = None) -> Chunk:
