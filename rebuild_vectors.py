@@ -4,6 +4,11 @@ Rebuild Qdrant vectors from existing database chunks.
 Useful after clearing Qdrant but keeping Postgres data intact.
 """
 import os
+from dotenv import load_dotenv
+
+# Load .env FIRST, BEFORE reading any env vars (override system environment)
+load_dotenv(override=True)
+
 os.environ["USE_OPENAI_EMBEDDINGS"] = "true"
 
 from api.db import db, Document, Chunk
@@ -43,6 +48,19 @@ def rebuild_vectors_bulk():
         # Initialize embedding generator and Qdrant
         embed_gen = get_embedding_generator()
         qdrant = QdrantClient("http://localhost:6333")
+        
+        # Ensure collection exists
+        from qdrant_client.models import VectorParams, Distance
+        EMBEDDING_DIMENSION = 1536  # text-embedding-3-small
+        QDRANT_COLLECTION = "ecm_docs"
+        try:
+            qdrant.get_collection(QDRANT_COLLECTION)
+        except:
+            logger.info(f"Creating collection {QDRANT_COLLECTION}...")
+            qdrant.create_collection(
+                collection_name=QDRANT_COLLECTION,
+                vectors_config=VectorParams(size=EMBEDDING_DIMENSION, distance=Distance.COSINE),
+            )
         
         # Batch processing (100 chunks at a time)
         BATCH_SIZE = 100
