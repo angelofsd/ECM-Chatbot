@@ -9,9 +9,11 @@ import logging
 from typing import List, Dict, Any, Optional, Tuple, Generator
 
 from api.llm import LLMConnector, LLMConfig
-from api.retriever import SearchResult
 
 logger = logging.getLogger(__name__)
+
+# Type alias for search results
+SearchResult = Dict[str, Any]
 
 # System prompt for the RAG assistant
 SYSTEM_PROMPT = """You are a helpful assistant for New Mexico Mutual's ECM (Enterprise Content Management) replacement project.
