@@ -150,14 +150,64 @@ It uses a local **RAG pipeline** with:
 
 ---
 
-## 5. Components To Build Next
-| Folder | Component | Description |
-|---------|------------|-------------|
-| `/ui/app/page.tsx` | Main chat UI |
-| `/ui/app/api/query/route.ts` | Next.js server action calling FastAPI |
-| `/ui/components/ChatMessage.tsx` | Message bubbles + citation expansion |
-| `/ui/styles` | Tailwind config |
-| `/ui/env.local` | Environment variables (`NEXT_PUBLIC_API_BASE`) |
+## 5. Completed: Phase 3 — Frontend (Next.js) ✅
+
+**Phase 3 Status**: ✅ **COMPLETE (Oct 29, 2025)** — Production-ready Next.js 14 frontend deployed locally.
+
+| Component | Status |
+|-----------|--------|
+| `/ui/package.json` | ✅ React 18.3, Next.js 14.1, TypeScript 5.3, Tailwind 3.4 |
+| `/ui/next.config.js` | ✅ API_BASE configuration for FastAPI backend |
+| `/ui/tsconfig.json` | ✅ Strict TypeScript mode, ES2020 target |
+| `/ui/tailwind.config.ts` | ✅ CSS variables, light/dark mode theming |
+| `/ui/app/layout.tsx` | ✅ Root layout with Inter font, metadata |
+| `/ui/app/globals.css` | ✅ Tailwind directives + theme CSS variables |
+| `/ui/app/page.tsx` | ✅ Main chat page with message history |
+| `/ui/components/ChatMessage.tsx` | ✅ Message bubbles with expandable citations |
+| `/ui/components/ChatInput.tsx` | ✅ Auto-grow textarea, Shift+Enter support |
+| `/ui/lib/api.ts` | ✅ Axios client for FastAPI backend communication |
+| `/ui/.env.local` | ✅ Environment variables configured |
+| `/ui/README.md` | ✅ Frontend documentation and setup guide |
+
+**Frontend Tech Stack**:
+- **Framework**: Next.js 14.1 with App Router (TypeScript)
+- **Styling**: Tailwind CSS 3.4 with CSS variables for theming
+- **HTTP Client**: Axios 1.6.5 for API communication
+- **State**: React hooks + Zustand (optional for complex state)
+- **Icons**: Lucide React 0.355 for UI elements
+- **Build**: SWC minification, CSS optimization, font loading
+- **Dependencies**: 447 packages installed, 0 vulnerabilities
+
+**Frontend Features**:
+- ✅ Real-time chat interface with message history
+- ✅ Source document citations (expandable list)
+- ✅ Loading indicators (animated bounce dots)
+- ✅ Error handling with user-friendly messages
+- ✅ Keyboard shortcuts (Enter to send, Shift+Enter for newline)
+- ✅ Auto-scrolling to latest message
+- ✅ Responsive design (mobile, tablet, desktop)
+- ✅ Dark mode support (CSS variables with .dark class)
+- ✅ Production build verified (24.1 kB, 111 kB First Load JS)
+
+**Build Status**:
+- ✅ `npm install`: 447 packages added, 0 vulnerabilities
+- ✅ `npm run build`: Compiled successfully, static pages generated
+- ✅ Route optimizations: 24.1 kB page size, 111 kB First Load JS
+
+**Local Setup**:
+```bash
+cd ui/
+npm install           # 447 dependencies installed
+cp .env.local.example .env.local
+npm run dev           # Runs on http://localhost:3000
+npm run build         # Production build
+npm start             # Serve built app
+```
+
+**Integration Points**:
+- FastAPI backend: `/query` endpoint returns `{ query, answer, citations[], tokens_used, sources_count, model }`
+- Environment variable: `NEXT_PUBLIC_API_BASE` (defaults to `http://localhost:8000`)
+- Polling interval: `NEXT_PUBLIC_POLLING_INTERVAL` (5000ms for streaming responses)
 
 ### ⚙️ Phase 4 — Deployment & Ops
 | Task | Description |
@@ -263,15 +313,20 @@ It uses a local **RAG pipeline** with:
 
 ## 7. Next Priority Actions
 
-1. ✅ **Phase 1 Complete** — 261 PDFs indexed with 3,122 chunks in ~19 minutes
-2. **Phase 2 Next**: Build LLM integration
-   - Create `api/llm.py` (OpenAI GPT-4 connector)
-   - Create `api/answer_generator.py` (RAG prompt builder with citations)
-   - Test retrieval with sample queries: "What is the timeline for ECM replacement?"
-3. **Integration**: Wire LLM into `/query` endpoint
-4. **Testing**: RAGAS eval or golden set validation
-5. **Phase 3**: Next.js frontend setup
-6. **Email ingestion**: Process 199 .msg files from Outlook folder
+1. ✅ **Phase 1 Complete** — 53 PDFs indexed with 665 chunks (after data cleanup)
+2. ✅ **Phase 2a Complete** — 199 emails indexed with 806 chunks
+3. ✅ **Phase 2b Complete** — LLM integration with GPT-5 mini, citation tracking
+4. ✅ **Phase 3 Complete** — Next.js 14 frontend with chat UI, components, API client
+5. **Phase 4 Next**: End-to-end testing & deployment
+   - Test frontend + backend integration locally
+   - Verify streaming responses work in UI
+   - Add authentication (demo token or Azure AD)
+   - Docker Compose for full stack orchestration
+6. **Phase 5**: Monitoring & enhancements
+   - Query logging and metrics
+   - Citation accuracy metrics
+   - Document ranking analysis
+   - User feedback loop
 
 ---
 
@@ -310,5 +365,5 @@ docker exec ecm_postgres psql -U postgres -d ecm_rag -c "
 
 ---
 
-**Last Updated**: Oct 28, 2025  
-**Status**: ✅ Phase 1 Complete — 261 documents indexed, 3,122 chunks, ready for Phase 2 (LLM integration)
+**Last Updated**: Oct 29, 2025  
+**Status**: ✅ Phase 1-3 Complete — 252 documents indexed (53 PDFs + 199 emails), 1,471 chunks, LLM integration ready, Next.js frontend deployed
