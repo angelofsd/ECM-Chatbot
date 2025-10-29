@@ -23,7 +23,7 @@ class LLMConfig:
     
     def __init__(
         self,
-        model: str = "gpt-4o-mini",  # Default to faster/cheaper model
+        model: str = "gpt-5-mini",  # Default to GPT-5 mini (faster/cost-effective)
         temperature: float = 0.7,
         max_tokens: int = 2048,
         top_p: float = 0.95,
@@ -226,6 +226,6 @@ def get_llm_connector(model: Optional[str] = None) -> LLMConnector:
     Returns:
         LLMConnector instance
     """
-    config_model = model or os.getenv("LLM_MODEL", "gpt-4o-mini")
+    config_model = model or os.getenv("LLM_MODEL", "gpt-5-mini")
     config = LLMConfig(model=config_model)
     return LLMConnector(config)
