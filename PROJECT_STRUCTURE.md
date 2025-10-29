@@ -107,7 +107,7 @@ It uses a local **RAG pipeline** with:
 ### 🧠 Phase 2b — LLM Integration & Answer Generation
 | Component | Purpose |
 |------------|----------|
-| `api/llm.py` | LLM connector (OpenAI GPT-4, configurable) |
+| `api/llm.py` | LLM connector (OpenAI GPT-5, configurable) |
 | `api/answer_generator.py` | Build context-limited prompts with citations |
 | Update `/api/main.py` | Integrate LLM into `/query` endpoint (retriever → LLM → answer) |
 | `eval.py` | RAGAS evaluation or manual golden set testing |
