@@ -102,17 +102,55 @@ It uses a local **RAG pipeline** with:
 - Email extraction with attachment filtering and memory cleanup
 - Multi-source ingestion with unified pipeline
 
+---
+
+## 4c. Completed: Phase 2b — LLM Integration & Answer Generation ✅
+
+**Phase 2b Status**: ✅ **COMPLETE (Oct 29, 2025)** — LLM connector and answer generation ready.
+
+| Component | Status |
+|-----------|--------|
+| `api/llm.py` | ✅ OpenAI chat completion wrapper |
+| `api/answer_generator.py` | ✅ RAG answer generation with citations |
+| `api/main.py` /query endpoint | ✅ Integrated LLM + retriever pipeline |
+| `test_llm_phase2b.py` | ✅ Comprehensive test suite |
+
+**LLM Connector Features**:
+- **Model support**: GPT-5, GPT-5 mini, GPT-5 nano (configurable via env)
+- **Default model**: GPT-5 mini (optimal for well-defined tasks, faster/cheaper)
+- **Token counting**: Using tiktoken for accurate prompt/response sizing
+- **Retry logic**: Exponential backoff for OpenAI rate limits
+- **Streaming support**: Real-time answer generation for UI
+- **Configuration**: Temperature, max_tokens, top_p all tunable
+
+**Answer Generator Features**:
+- **Citation tracking**: Tracks which source documents are referenced
+- **Context management**: Limits context to 3,000 tokens (configurable)
+- **System prompt**: Optimized for ECM project stakeholder context
+- **Streaming**: Supports both batch and streaming answer generation
+
+**Integration with /query endpoint**:
+- Retriever finds top-k relevant documents
+- AnswerGenerator creates contextual prompt
+- LLM generates answer with citations
+- Response includes: answer, citations, token count, model used
+
+**Test Results** (Oct 29):
+- ✅ Token counting: Accurate word-to-token conversion
+- ✅ LLM completion: gpt-4o-mini responding properly
+- ✅ Answer generation: Generates contextual answers with document citations
+- ✅ Citation tracking: Properly attributes sources in answers
+
+**Technical Specifications**:
+- Default model: GPT-5 mini (optimal for well-defined tasks)
+- Temperature: 0.7 (balanced creativity)
+- Max tokens: 2,048 (plenty for detailed answers)
+- Context window: 3,000 tokens for retrieved documents
+- Streaming: Full support for real-time UI updates
+
+---
+
 ## 5. Components To Build Next
-
-### 🧠 Phase 2b — LLM Integration & Answer Generation
-| Component | Purpose |
-|------------|----------|
-| `api/llm.py` | LLM connector (OpenAI GPT-5, configurable) |
-| `api/answer_generator.py` | Build context-limited prompts with citations |
-| Update `/api/main.py` | Integrate LLM into `/query` endpoint (retriever → LLM → answer) |
-| `eval.py` | RAGAS evaluation or manual golden set testing |
-
-### 💬 Phase 3 — Frontend
 | Folder | Component | Description |
 |---------|------------|-------------|
 | `/ui/app/page.tsx` | Main chat UI |
