@@ -50,32 +50,66 @@ It uses a local **RAG pipeline** with:
 | `/rebuild_vectors.py` | ✅ **UTILITY**: Re-upload vectors to Qdrant from Postgres chunks (bulk processing) |
 | `/ocr_prepare.py` | ✅ Phase 0 complete: 262 PDFs processed (58 OCR'd, 204 text-ready) |
 
-**Phase 1 Status**: ✅ **COMPLETE (Oct 28, 2025)** — Full PDF ingestion pipeline operational.
+**Phase 1 Status**: ✅ **COMPLETE (Oct 28-29, 2025)** — PDF ingestion pipeline operational.
 
-**Final Stats**:
-- **261 documents indexed** (99.6% success rate)
-- **3,122 text chunks** created (avg ~12 chunks/doc)
-- **3,122 embeddings** in Qdrant (OpenAI text-embedding-3-small, 1536d)
-- **Ingestion time**: 19 minutes with 20 parallel workers
-- **Known failure**: 1 PDF (Integrion Org Chart) has no extractable text after OCR
+**PDF Ingestion Stats** (final, after cleanup):
+- **53 documents indexed** (100% success rate after removing 2019 research contamination)
+- **665 text chunks** created (avg ~12.6 chunks/doc)
+- **665 embeddings** in Qdrant (OpenAI text-embedding-3-small, 1536d)
+- **Ingestion time**: 13.5 minutes with 8 parallel workers
+- **Dataset**: Cleaned (removed 209-file ECM_2019 research directory)
 
-**Key Achievements**:
-- Parallel processing with ProcessPoolExecutor (4-20 workers tested)
-- OpenAI embeddings integration with proper API key management
-- Memory optimization: 500-token chunks, 40-chunk mini-batches, explicit gc.collect()
+---
+
+## 4b. Completed: Phase 2a — Email Ingestion ✅
+
+**Phase 2a Status**: ✅ **COMPLETE (Oct 29, 2025)** — Email ingestion pipeline operational.
+
+| Component | Status |
+|-----------|--------|
+| Email extractor (`.msg`/`.eml`) | ✅ Integrated into ingest pipeline |
+| Source type tracking | ✅ Document.source_type now stored in DB |
+| Parallel email ingestion | ✅ Works with existing ingest_pool.py |
+| Qdrant vector sync | ✅ All embeddings in sync with DB chunks |
+
+**Email Ingestion Results**:
+- **195 .msg/.eml files** discovered in `C:\ecm-staging\Outlook\`
+- **149 emails selected** (dedupe pass)
+- **134 successfully ingested** (89.9% success rate)
+- **15 failed** — NUL (0x00) characters in binary attachments (acceptable)
+- **199 email documents** total (including dedupe handling)
+- **806 text chunks** from emails (avg ~4.0 chunks/email)
+- **Ingestion time**: ~7 minutes with 8 workers
+
+**Combined Dataset** (Oct 29, 2025):
+- **252 total documents** (53 PDFs + 199 emails)
+- **1,471 total chunks** (665 PDFs + 806 emails)
+- **1,471 Qdrant vectors** (OpenAI text-embedding-3-small, 1536d)
+- **Source types**: `pdf` (53), `email` (199)
+
+**Infrastructure Fixes** (Oct 29):
+- Fixed API key environment shadowing (system env var was overriding .env)
+  - Solution: `load_dotenv(override=True)` at startup + pass to workers
+- Removed 2019 research contamination: 209 files, 208 docs, 2,316 chunks
+- Database now clean: zero orphaned records, proper source_type tracking
+
+**Key Achievements** (Phase 1 & 2a):
+- Parallel processing with ProcessPoolExecutor (4-20 workers)
+- OpenAI embeddings integration with proper environment handling
+- Memory optimization: 500-token chunks, 40-chunk mini-batches, gc.collect()
 - Resume capability: skips already-processed documents
 - Postgres on non-standard port 15432 (Windows Docker workaround)
+- Email extraction with attachment filtering and memory cleanup
+- Multi-source ingestion with unified pipeline
 
 ## 5. Components To Build Next
 
-### 🧠 Phase 2 — Retrieval & Answer Generation
-
-### 🧠 Phase 2 — LLM Integration & Answer Generation
+### 🧠 Phase 2b — LLM Integration & Answer Generation
 | Component | Purpose |
 |------------|----------|
-| `llm.py` | LLM connector (OpenAI GPT-5, configurable) |
-| `answer_generator.py` | Build context-limited prompts with citations |
-| Update `/api/main.py` | Integrate LLM into `/query` endpoint |
+| `api/llm.py` | LLM connector (OpenAI GPT-4, configurable) |
+| `api/answer_generator.py` | Build context-limited prompts with citations |
+| Update `/api/main.py` | Integrate LLM into `/query` endpoint (retriever → LLM → answer) |
 | `eval.py` | RAGAS evaluation or manual golden set testing |
 
 ### 💬 Phase 3 — Frontend
