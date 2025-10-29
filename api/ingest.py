@@ -341,6 +341,7 @@ def ingest_document(file_path: Path, source_type: str, department: str) -> Tuple
             sha256="",  # Could compute if needed
             department=department,
             acl_tags=department,
+            source_type=source_type,
         )
         
         logger.info(f"Document added with ID: {doc_id}")

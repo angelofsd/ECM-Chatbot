@@ -247,6 +247,7 @@ def add_document(
     sha256: str,
     department: str = None,
     acl_tags: str = None,
+    source_type: str = "pdf",
 ) -> int:
     """Add a new document and return its ID."""
     session = db.get_session()
@@ -258,6 +259,7 @@ def add_document(
         sha256=sha256,
         department=department,
         acl_tags=acl_tags,
+        source_type=source_type,
     )
     session.add(doc)
     session.commit()
