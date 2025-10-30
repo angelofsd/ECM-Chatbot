@@ -305,4 +305,4 @@ For issues or questions:
 **Project Status**: 🚀 **READY FOR TESTING & DEPLOYMENT**
 
 **Last Updated**: October 29, 2025  
-**Maintainers**: Angela (Human), AI Assistant (GitHub Copilot)
+**Maintainers**: Angel Acosta (Human), AI Assistant (GitHub Copilot)
