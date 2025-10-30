@@ -1,0 +1,86 @@
+Date : 2025-10-29 16:10:55
+Directory : c:\Users\angela\dev\ECM-Chatbot
+Total : 41 files,  10319 codes, 1062 comments, 1100 blanks, all 12481 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          2 |      6,380 |          0 |          2 |      6,382 |
+| Python             |         18 |      2,441 |      1,013 |        713 |      4,167 |
+| Markdown           |          5 |        957 |          0 |        311 |      1,268 |
+| TypeScript JSX     |          4 |        250 |         12 |         34 |        296 |
+| JSON with Comments |          1 |         57 |          0 |          1 |         58 |
+| PostCSS            |          1 |         56 |          0 |          4 |         60 |
+| TypeScript         |          2 |         53 |          5 |          3 |         61 |
+| YAML               |          1 |         38 |          0 |          4 |         42 |
+| pip requirements   |          1 |         32 |         12 |         11 |         55 |
+| Ignore             |          1 |         28 |          8 |          8 |         44 |
+| JavaScript         |          2 |         14 |          1 |          3 |         18 |
+| Shell Script       |          1 |          6 |          3 |          2 |         11 |
+| Properties         |          1 |          5 |          4 |          1 |         10 |
+| MS SQL             |          1 |          2 |          4 |          3 |          9 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                              | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                 |         41 |     10,319 |      1,062 |      1,100 |     12,481 |
+| . (Files)                                                         |         14 |      1,515 |        132 |        429 |      2,076 |
+| api                                                               |         14 |      1,861 |        912 |        566 |      3,339 |
+| api (Files)                                                       |         12 |      1,683 |        829 |        528 |      3,040 |
+| api\extractors                                                    |          2 |        178 |         83 |         38 |        299 |
+| ui                                                                |         13 |      6,943 |         18 |        105 |      7,066 |
+| ui (Files)                                                        |          8 |      6,637 |          6 |         67 |      6,710 |
+| ui\app                                                            |          3 |        170 |          6 |         21 |        197 |
+| ui\components                                                     |          2 |        136 |          6 |         17 |        159 |
++-------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                          | language           | code       | comment    | blank      | total      |
++-------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| c:\Users\angela\dev\ECM-Chatbot\.dockerignore                     | Ignore             |         28 |          8 |          8 |         44 |
+| c:\Users\angela\dev\ECM-Chatbot\AGENTS.md                         | Markdown           |        220 |          0 |         69 |        289 |
+| c:\Users\angela\dev\ECM-Chatbot\OPENAI_SETUP.md                   | Markdown           |        114 |          0 |         48 |        162 |
+| c:\Users\angela\dev\ECM-Chatbot\PROJECT_STRUCTURE.md              | Markdown           |        250 |          0 |         65 |        315 |
+| c:\Users\angela\dev\ECM-Chatbot\README.md                         | Markdown           |        240 |          0 |         71 |        311 |
+| c:\Users\angela\dev\ECM-Chatbot\api\__init__.py                   | Python             |          1 |          9 |          2 |         12 |
+| c:\Users\angela\dev\ECM-Chatbot\api\answer_generator.py           | Python             |        147 |         69 |         35 |        251 |
+| c:\Users\angela\dev\ECM-Chatbot\api\config.py                     | Python             |         80 |         53 |         24 |        157 |
+| c:\Users\angela\dev\ECM-Chatbot\api\db.py                         | Python             |        179 |         66 |         65 |        310 |
+| c:\Users\angela\dev\ECM-Chatbot\api\embeddings.py                 | Python             |        119 |         54 |         40 |        213 |
+| c:\Users\angela\dev\ECM-Chatbot\api\extractors\__init__.py        | Python             |          0 |         11 |          1 |         12 |
+| c:\Users\angela\dev\ECM-Chatbot\api\extractors\email_extractor.py | Python             |        178 |         72 |         37 |        287 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest.py                     | Python             |        325 |        109 |         98 |        532 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest_pdf.py                 | Python             |        222 |         86 |         62 |        370 |
+| c:\Users\angela\dev\ECM-Chatbot\api\llm.py                        | Python             |        112 |         92 |         28 |        232 |
+| c:\Users\angela\dev\ECM-Chatbot\api\main.py                       | Python             |        177 |         89 |         62 |        328 |
+| c:\Users\angela\dev\ECM-Chatbot\api\requirements.txt              | pip requirements   |         32 |         12 |         11 |         55 |
+| c:\Users\angela\dev\ECM-Chatbot\api\retriever.py                  | Python             |        195 |        119 |         65 |        379 |
+| c:\Users\angela\dev\ECM-Chatbot\api\security.py                   | Python             |         94 |         71 |         36 |        201 |
+| c:\Users\angela\dev\ECM-Chatbot\docker-compose.yml                | YAML               |         38 |          0 |          4 |         42 |
+| c:\Users\angela\dev\ECM-Chatbot\docker-init-db.sh                 | Shell Script       |          6 |          3 |          2 |         11 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_emails_batch.py            | Python             |        112 |         29 |         35 |        176 |
+| c:\Users\angela\dev\ECM-Chatbot\ingest_pool.py                    | Python             |        172 |         41 |         54 |        267 |
+| c:\Users\angela\dev\ECM-Chatbot\init-db.sql                       | MS SQL             |          2 |          4 |          3 |          9 |
+| c:\Users\angela\dev\ECM-Chatbot\ocr_prepare.py                    | Python             |        154 |         13 |         21 |        188 |
+| c:\Users\angela\dev\ECM-Chatbot\pg_hba.conf                       | Properties         |          5 |          4 |          1 |         10 |
+| c:\Users\angela\dev\ECM-Chatbot\rebuild_vectors.py                | Python             |         77 |         16 |         22 |        115 |
+| c:\Users\angela\dev\ECM-Chatbot\test_llm_phase2b.py               | Python             |         97 |         14 |         26 |        137 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\README.md                      | Markdown           |        133 |          0 |         58 |        191 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\app\globals.css                | PostCSS            |         56 |          0 |          4 |         60 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\app\layout.tsx                 | TypeScript JSX     |         19 |          0 |          4 |         23 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\app\page.tsx                   | TypeScript JSX     |         95 |          6 |         13 |        114 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\components\ChatInput.tsx       | TypeScript JSX     |         62 |          3 |          9 |         74 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\components\ChatMessage.tsx     | TypeScript JSX     |         74 |          3 |          8 |         85 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\next-env.d.ts                  | TypeScript         |          0 |          4 |          2 |          6 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\next.config.js                 | JavaScript         |          8 |          1 |          2 |         11 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\package-lock.json              | JSON               |      6,343 |          0 |          1 |      6,344 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\package.json                   | JSON               |         37 |          0 |          1 |         38 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\postcss.config.js              | JavaScript         |          6 |          0 |          1 |          7 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\tailwind.config.ts             | TypeScript         |         53 |          1 |          1 |         55 |
+| c:\Users\angela\dev\ECM-Chatbot\ui\tsconfig.json                  | JSON with Comments |         57 |          0 |          1 |         58 |
+| Total                                                             |                    |     10,319 |      1,062 |      1,100 |     12,481 |
++-------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

@@ -6,9 +6,14 @@ No ORM dependencies - direct Qdrant + OpenAI integration
 
 import os
 import logging
+import sqlite3
 from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
+
+# Configure logging first
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, BackgroundTasks
@@ -17,18 +22,53 @@ from pydantic import BaseModel
 import requests
 from openai import OpenAI
 
-# Load environment variables
-load_dotenv(Path(__file__).parent.parent / ".env")
+# Load environment variables from .env file
+env_file = Path(__file__).parent.parent / ".env"
+load_dotenv(env_file, override=True)
 
 # ========================
 # Configuration
 # ========================
+# Force read from .env file, ignore VS Code Copilot's OPENAI_API_KEY
+OPENAI_API_KEY = None
+with open(env_file, 'r') as f:
+    for line in f:
+        if line.strip().startswith('OPENAI_API_KEY='):
+            OPENAI_API_KEY = line.strip().split('=', 1)[1]
+            # Force set in environment too
+            os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
+            break
+
 QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "ecm_docs")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger.info(f"Loaded OPENAI_API_KEY: {OPENAI_API_KEY[:20]}..." if OPENAI_API_KEY else "No API key loaded")
+
+# Initialize SQLite connection for full chunk text
+SQLITE_DB = Path(__file__).parent.parent / "ecm_rag.db"
+sqlite_conn = None
+
+def get_sqlite_conn():
+    """Get SQLite connection, lazy-loaded."""
+    global sqlite_conn
+    if sqlite_conn is None and SQLITE_DB.exists():
+        sqlite_conn = sqlite3.connect(str(SQLITE_DB), check_same_thread=False)
+    return sqlite_conn
+
+
+def get_chunk_text_from_db(qdrant_id: str) -> Optional[str]:
+    """Get full chunk text from SQLite if available."""
+    try:
+        conn = get_sqlite_conn()
+        if not conn:
+            return None
+        cursor = conn.cursor()
+        cursor.execute("SELECT text FROM chunks WHERE qdrant_id = ?", (qdrant_id,))
+        row = cursor.fetchone()
+        return row[0] if row else None
+    except Exception as e:
+        logger.debug(f"SQLite lookup failed for {qdrant_id}: {e}")
+        return None
 
 # ========================
 # Pydantic Models
@@ -78,6 +118,8 @@ app.add_middleware(
 def search_documents(query: str, top_k: int = 5) -> List[dict]:
     """Search Qdrant for relevant documents."""
     try:
+        logger.info(f"Searching for: {query}")
+        
         # Create embedding for query
         client = OpenAI(api_key=OPENAI_API_KEY)
         embedding_response = client.embeddings.create(
@@ -85,6 +127,7 @@ def search_documents(query: str, top_k: int = 5) -> List[dict]:
             input=query
         )
         query_embedding = embedding_response.data[0].embedding
+        logger.info(f"Created embedding with {len(query_embedding)} dimensions")
         
         # Search Qdrant
         search_payload = {
@@ -101,21 +144,32 @@ def search_documents(query: str, top_k: int = 5) -> List[dict]:
         response.raise_for_status()
         
         results = response.json().get('result', [])
+        logger.info(f"Found {len(results)} results from Qdrant")
         
         # Format results
         formatted_results = []
         for point in results:
             payload = point.get('payload', {})
+            point_id = point.get('id')
+            
+            # Try to get full text from SQLite first
+            text = get_chunk_text_from_db(str(point_id))
+            
+            # Fall back to payload text or preview
+            if not text:
+                text = payload.get('text', '') or payload.get('text_preview', '')
+            
             formatted_results.append({
                 'filename': payload.get('filename', 'Unknown'),
-                'text': payload.get('text', '')[:500],  # First 500 chars
+                'text': text[:1000],  # Use up to 1000 chars for LLM context
                 'score': point.get('score', 0)
             })
         
+        logger.info(f"Returning {len(formatted_results)} formatted results")
         return formatted_results
     
     except Exception as e:
-        logger.error(f"Search error: {e}")
+        logger.error(f"Search error: {e}", exc_info=True)
         return []
 
 def generate_answer(query: str, search_results: List[dict]) -> tuple[str, List[Citation]]:
@@ -191,11 +245,15 @@ async def health_check():
 @app.post("/query", response_model=QueryResponse)
 async def query_endpoint(request: QueryRequest):
     """RAG query endpoint."""
+    logger.info(f"=== Query endpoint called with: {request.query}")
     try:
         # Search for relevant documents
+        logger.info("Calling search_documents...")
         search_results = search_documents(request.query, top_k=request.top_k)
+        logger.info(f"Search returned {len(search_results)} results")
         
         if not search_results:
+            logger.warning("No search results, returning empty answer")
             return QueryResponse(
                 query=request.query,
                 answer="I could not find relevant information in the documents to answer your question.",
@@ -206,7 +264,9 @@ async def query_endpoint(request: QueryRequest):
             )
         
         # Generate answer
+        logger.info("Generating answer...")
         answer, citations, tokens_used = generate_answer(request.query, search_results)
+        logger.info(f"Answer generated with {len(citations)} citations")
         
         return QueryResponse(
             query=request.query,
@@ -218,7 +278,7 @@ async def query_endpoint(request: QueryRequest):
         )
     
     except Exception as e:
-        logger.error(f"Query error: {e}")
+        logger.error(f"Query error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")

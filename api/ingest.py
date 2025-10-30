@@ -379,7 +379,8 @@ def ingest_document(file_path: Path, source_type: str, department: str) -> Tuple
                     "source_type": source_type,
                     "department": department,
                     "sequence": chunk["sequence"],
-                    "text_preview": chunk["text"][:200],
+                    "text": chunk["text"],  # Store full text for LLM context
+                    "text_preview": chunk["text"][:300],  # Also keep preview for display
                 }
                 
                 if upsert_to_qdrant(qdrant_id, embedding, payload):
