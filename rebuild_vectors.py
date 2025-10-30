@@ -92,7 +92,7 @@ def rebuild_vectors_bulk():
                         "source_type": chunk.source_type,
                         "department": chunk.department,
                         "sequence": chunk.sequence,
-                        "text_preview": chunk.text[:200],
+                        "text": chunk.text,  # Store full text, not just preview
                     }
                 )
                 points.append(point)
