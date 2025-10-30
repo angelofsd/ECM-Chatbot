@@ -68,9 +68,11 @@ logger.info(f"Model loaded. Dimension: {EMBEDDING_DIMENSION}")
 # Data Classes
 # ========================
 
+
 @dataclass
 class TextChunk:
     """A text chunk with metadata."""
+
     text: str
     sequence: int  # Order in document
     token_count: int
@@ -79,6 +81,7 @@ class TextChunk:
 # ========================
 # Core Functions
 # ========================
+
 
 def load_inventory_csv() -> dict:
     """Load inventory.csv to get document metadata."""
@@ -115,6 +118,7 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
     """Extract text from PDF file."""
     try:
         from pypdf import PdfReader
+
         reader = PdfReader(str(pdf_path))
         text = ""
         for page in reader.pages:
@@ -125,15 +129,17 @@ def extract_text_from_pdf(pdf_path: Path) -> str:
         return ""
 
 
-def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> List[TextChunk]:
+def chunk_text(
+    text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
+) -> List[TextChunk]:
     """
     Split text into chunks with overlap.
-    
+
     Args:
         text: Full text to chunk
         chunk_size: Target size in tokens (approximate)
         overlap: Token overlap between chunks
-    
+
     Returns:
         List of TextChunk objects
     """
@@ -150,11 +156,9 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
         end = min(start + chunk_size, len(words))
         chunk_text = " ".join(words[start:end])
 
-        chunks.append(TextChunk(
-            text=chunk_text,
-            sequence=sequence,
-            token_count=end - start
-        ))
+        chunks.append(
+            TextChunk(text=chunk_text, sequence=sequence, token_count=end - start)
+        )
 
         # Move to next chunk with overlap
         sequence += 1
@@ -167,10 +171,10 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
 def embed_chunks(chunks: List[TextChunk]) -> List[Tuple[TextChunk, np.ndarray]]:
     """
     Generate embeddings for text chunks.
-    
+
     Args:
         chunks: List of TextChunk objects
-    
+
     Returns:
         List of (chunk, embedding) tuples
     """
@@ -194,7 +198,9 @@ def ensure_qdrant_collection():
         logger.info(f"Creating Qdrant collection '{QDRANT_COLLECTION}'...")
         qdrant_client.create_collection(
             collection_name=QDRANT_COLLECTION,
-            vectors_config=VectorParams(size=EMBEDDING_DIMENSION, distance=Distance.COSINE),
+            vectors_config=VectorParams(
+                size=EMBEDDING_DIMENSION, distance=Distance.COSINE
+            ),
         )
         logger.info("Collection created")
 
@@ -220,11 +226,11 @@ def upsert_to_qdrant(qdrant_id: str, embedding: np.ndarray, payload: dict) -> bo
 def ingest_pdf(pdf_path: Path, inventory: dict) -> Tuple[bool, str]:
     """
     Ingest a single PDF: extract, chunk, embed, store.
-    
+
     Args:
         pdf_path: Path to PDF file
         inventory: Dictionary from inventory CSV
-    
+
     Returns:
         (success: bool, message: str)
     """
@@ -302,7 +308,7 @@ def ingest_pdf(pdf_path: Path, inventory: dict) -> Tuple[bool, str]:
 def main(force_reindex: bool = False, sample: Optional[int] = None):
     """
     Main ingestion pipeline.
-    
+
     Args:
         force_reindex: If True, reset Qdrant and re-ingest all
         sample: If set, only process first N PDFs
@@ -362,8 +368,12 @@ def main(force_reindex: bool = False, sample: Optional[int] = None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Ingest PDFs into ECM RAG chatbot")
-    parser.add_argument("--force-reindex", action="store_true", help="Reset and re-ingest all PDFs")
-    parser.add_argument("--sample", type=int, default=None, help="Only process first N PDFs")
+    parser.add_argument(
+        "--force-reindex", action="store_true", help="Reset and re-ingest all PDFs"
+    )
+    parser.add_argument(
+        "--sample", type=int, default=None, help="Only process first N PDFs"
+    )
     args = parser.parse_args()
 
     main(force_reindex=args.force_reindex, sample=args.sample)
