@@ -92,7 +92,8 @@ def rebuild_vectors_bulk():
                         "source_type": chunk.source_type,
                         "department": chunk.department,
                         "sequence": chunk.sequence,
-                        "text_preview": chunk.text[:200],
+                        "text": chunk.text,  # Store full text for LLM context
+                        "text_preview": chunk.text[:300],  # Also keep preview for display
                     }
                 )
                 points.append(point)

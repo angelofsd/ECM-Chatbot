@@ -1,0 +1,48 @@
+Date : 2025-10-30 16:20:08
+Directory : c:\Users\angela\dev\ECM-Chatbot
+Total : 20 files,  1976 codes, 154 comments, 520 blanks, all 2650 lines
+
+Languages
++------------------+------------+------------+------------+------------+------------+
+| language         | files      | code       | comment    | blank      | total      |
++------------------+------------+------------+------------+------------+------------+
+| Markdown         |          6 |      1,047 |          0 |        316 |      1,363 |
+| Python           |         13 |        915 |        154 |        203 |      1,272 |
+| pip requirements |          1 |         14 |          0 |          1 |         15 |
++------------------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                        | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                           |         20 |      1,976 |        154 |        520 |      2,650 |
+| . (Files)                                                   |         16 |      1,773 |        125 |        491 |      2,389 |
+| api                                                         |          4 |        203 |         29 |         29 |        261 |
++-------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| filename                                                    | language         | code       | comment    | blank      | total      |
++-------------------------------------------------------------+------------------+------------+------------+------------+------------+
+| c:\Users\angela\dev\ECM-Chatbot\PHASE3_SUMMARY.md           | Markdown         |        238 |          0 |         71 |        309 |
+| c:\Users\angela\dev\ECM-Chatbot\PROJECT_STRUCTURE.md        | Markdown         |         88 |          0 |         20 |        108 |
+| c:\Users\angela\dev\ECM-Chatbot\QUICKREF.md                 | Markdown         |        102 |          0 |         41 |        143 |
+| c:\Users\angela\dev\ECM-Chatbot\STATUS_REPORT.md            | Markdown         |        323 |          0 |         79 |        402 |
+| c:\Users\angela\dev\ECM-Chatbot\TESTING.md                  | Markdown         |        126 |          0 |         42 |        168 |
+| c:\Users\angela\dev\ECM-Chatbot\TEST_RESULTS.md             | Markdown         |        170 |          0 |         63 |        233 |
+| c:\Users\angela\dev\ECM-Chatbot\api\app_simple.py           | Python           |        206 |         30 |         29 |        265 |
+| c:\Users\angela\dev\ECM-Chatbot\api\config.py               | Python           |         -5 |         -1 |          0 |         -6 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest.py               | Python           |          1 |          0 |          0 |          1 |
+| c:\Users\angela\dev\ECM-Chatbot\api\ingest_pdf.py           | Python           |          1 |          0 |          0 |          1 |
+| c:\Users\angela\dev\ECM-Chatbot\fix_qdrant_full_text.py     | Python           |        120 |         21 |         31 |        172 |
+| c:\Users\angela\dev\ECM-Chatbot\quick_fix_qdrant.py         | Python           |         44 |          7 |         13 |         64 |
+| c:\Users\angela\dev\ECM-Chatbot\rebuild_qdrant_full_text.py | Python           |        117 |         24 |         37 |        178 |
+| c:\Users\angela\dev\ECM-Chatbot\rebuild_simple.py           | Python           |         85 |         18 |         26 |        129 |
+| c:\Users\angela\dev\ECM-Chatbot\rebuild_vectors.py          | Python           |          1 |          0 |          0 |          1 |
+| c:\Users\angela\dev\ECM-Chatbot\requirements.txt            | pip requirements |         14 |          0 |          1 |         15 |
+| c:\Users\angela\dev\ECM-Chatbot\test_basic.py               | Python           |         81 |         13 |         11 |        105 |
+| c:\Users\angela\dev\ECM-Chatbot\test_e2e.py                 | Python           |         98 |         16 |         22 |        136 |
+| c:\Users\angela\dev\ECM-Chatbot\test_system.py              | Python           |        111 |         17 |         19 |        147 |
+| c:\Users\angela\dev\ECM-Chatbot\update_payloads.py          | Python           |         55 |          9 |         15 |         79 |
+| Total                                                       |                  |      1,976 |        154 |        520 |      2,650 |
++-------------------------------------------------------------+------------------+------------+------------+------------+------------+

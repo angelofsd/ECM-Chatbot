@@ -1,0 +1,22 @@
+"filename", "language", "Python", "pip requirements", "Markdown", "comment", "blank", "total"
+"c:\Users\angela\dev\ECM-Chatbot\PHASE3_SUMMARY.md", "Markdown", 0, 0, 238, 0, 71, 309
+"c:\Users\angela\dev\ECM-Chatbot\PROJECT_STRUCTURE.md", "Markdown", 0, 0, 88, 0, 20, 108
+"c:\Users\angela\dev\ECM-Chatbot\QUICKREF.md", "Markdown", 0, 0, 102, 0, 41, 143
+"c:\Users\angela\dev\ECM-Chatbot\STATUS_REPORT.md", "Markdown", 0, 0, 323, 0, 79, 402
+"c:\Users\angela\dev\ECM-Chatbot\TESTING.md", "Markdown", 0, 0, 126, 0, 42, 168
+"c:\Users\angela\dev\ECM-Chatbot\TEST_RESULTS.md", "Markdown", 0, 0, 170, 0, 63, 233
+"c:\Users\angela\dev\ECM-Chatbot\api\app_simple.py", "Python", 206, 0, 0, 30, 29, 265
+"c:\Users\angela\dev\ECM-Chatbot\api\config.py", "Python", -5, 0, 0, -1, 0, -6
+"c:\Users\angela\dev\ECM-Chatbot\api\ingest.py", "Python", 1, 0, 0, 0, 0, 1
+"c:\Users\angela\dev\ECM-Chatbot\api\ingest_pdf.py", "Python", 1, 0, 0, 0, 0, 1
+"c:\Users\angela\dev\ECM-Chatbot\fix_qdrant_full_text.py", "Python", 120, 0, 0, 21, 31, 172
+"c:\Users\angela\dev\ECM-Chatbot\quick_fix_qdrant.py", "Python", 44, 0, 0, 7, 13, 64
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_qdrant_full_text.py", "Python", 117, 0, 0, 24, 37, 178
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_simple.py", "Python", 85, 0, 0, 18, 26, 129
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_vectors.py", "Python", 1, 0, 0, 0, 0, 1
+"c:\Users\angela\dev\ECM-Chatbot\requirements.txt", "pip requirements", 0, 14, 0, 0, 1, 15
+"c:\Users\angela\dev\ECM-Chatbot\test_basic.py", "Python", 81, 0, 0, 13, 11, 105
+"c:\Users\angela\dev\ECM-Chatbot\test_e2e.py", "Python", 98, 0, 0, 16, 22, 136
+"c:\Users\angela\dev\ECM-Chatbot\test_system.py", "Python", 111, 0, 0, 17, 19, 147
+"c:\Users\angela\dev\ECM-Chatbot\update_payloads.py", "Python", 55, 0, 0, 9, 15, 79
+"Total", "-", 915, 14, 1047, 154, 520, 2650

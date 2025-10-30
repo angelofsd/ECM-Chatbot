@@ -15,26 +15,20 @@ load_dotenv()
 # ========================
 # Database Configuration
 # ========================
-# Toggle between SQLite (local dev) and Postgres (production)
-USE_SQLITE = os.getenv("USE_SQLITE", "true").lower() == "true"
+# ALWAYS use Postgres (no SQLite support)
+USE_SQLITE = False
 
-if USE_SQLITE:
-    # SQLite for local development (no Docker needed)
-    SQLITE_PATH = Path(os.getenv("SQLITE_PATH", r"C:\ecm-staging\ecm_rag.db"))
-    DATABASE_URL = f"sqlite:///{SQLITE_PATH}"
-    DATABASE_URL_ASYNC = f"sqlite+aiosqlite:///{SQLITE_PATH}"
-else:
-    # Postgres for production
-    POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-    POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-    POSTGRES_PORT = os.getenv("POSTGRES_PORT", "15432")  # Using non-standard port to avoid conflicts
-    POSTGRES_DB = os.getenv("POSTGRES_DB", "ecm_rag")
-    DATABASE_URL = (
-        f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@"
-        f"{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-    )
-    DATABASE_URL_ASYNC = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
+# Postgres configuration
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "15432")  # Using non-standard port to avoid conflicts
+POSTGRES_DB = os.getenv("POSTGRES_DB", "ecm_rag")
+DATABASE_URL = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@"
+    f"{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+)
+DATABASE_URL_ASYNC = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://")
 
 # ========================
 # Vector Store (Qdrant)

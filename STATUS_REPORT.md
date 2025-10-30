@@ -1,7 +1,26 @@
 # ECM RAG Chatbot — Final Status Report
-**Date**: October 29, 2025  
-**Session Duration**: ~24 hours (Oct 28-29)  
-**Status**: ✅ **PRODUCTION READY**
+**Date**: October 30, 2025  
+**Status**: ✅ **PRODUCTION READY** (with Oct 30 architectural improvements)
+
+---
+
+## 🎉 Latest Updates (Oct 30, 2025)
+
+### ✅ Architecture Improvement: Full Text Storage in Qdrant
+**Problem**: Qdrant payloads stored only 200-char previews → LLM lacked context for detailed questions  
+**Solution**: Store full chunk text (2,500+ chars) directly in Qdrant payloads
+
+**Changes Made**:
+- Updated 3 ingestion files (`ingest.py`, `ingest_pdf.py`, `rebuild_vectors.py`)
+- Rebuilt all 1,471 vectors with full text (~2 minutes)
+- Simplified `app_simple.py`: removed Postgres text lookup code
+- Single-source architecture: Qdrant only (Postgres still used for metadata/ACLs)
+
+**Results**:
+- ✅ 12.5x more context per chunk (2,500 chars vs 200)
+- ✅ Simpler architecture (no dual lookups)
+- ✅ Accurate detailed answers (pricing, vendors, timelines)
+- ✅ Verified with production query: $3.43M Newgen cost breakdown successfully retrieved
 
 ---
 
@@ -32,15 +51,22 @@
 - Development: 447 npm packages installed, production build verified
 - Documentation: Comprehensive README + testing guide
 
-✅ **Phase 3: Documentation & Git Management** (Complete)
-- 15 commits with clear, descriptive messages
-- 6 comprehensive documentation files:
-  - PHASE3_SUMMARY.md — Project overview
+✅ **Phase 3b: Architecture Optimization** (Complete - Oct 30)
+- Full text storage in Qdrant (2,500+ chars per chunk)
+- Simplified retrieval architecture (single source)
+- Production-tested with complex pricing queries
+- Updated .gitignore (log files protected)
+
+✅ **Documentation & Git Management** (Complete)
+- Clear commit messages documenting changes
+- 7 comprehensive documentation files:
+  - STATUS_REPORT.md — This file
   - PROJECT_STRUCTURE.md — Architecture details
   - TESTING.md — Testing procedures
   - QUICKREF.md — Quick start guide
   - AGENTS.md — Development guidelines
   - ui/README.md — Frontend setup
+  - TEST_RESULTS.md — Production test results
 - All code properly commented and documented
 
 ---

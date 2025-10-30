@@ -272,7 +272,8 @@ def ingest_pdf(pdf_path: Path, inventory: dict) -> Tuple[bool, str]:
                 "filename": filename,
                 "department": department,
                 "sequence": chunk.sequence,
-                "text_preview": chunk.text[:200],
+                "text": chunk.text,  # Store full text for LLM context
+                "text_preview": chunk.text[:300],  # Also keep preview for display
             }
 
             if upsert_to_qdrant(qdrant_id, embedding, payload):

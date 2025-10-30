@@ -6,7 +6,6 @@ No ORM dependencies - direct Qdrant + OpenAI integration
 
 import os
 import logging
-import sqlite3
 from typing import List, Optional
 from datetime import datetime
 from pathlib import Path
@@ -43,32 +42,6 @@ QDRANT_URL = os.getenv("QDRANT_URL", "http://localhost:6333")
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "ecm_docs")
 
 logger.info(f"Loaded OPENAI_API_KEY: {OPENAI_API_KEY[:20]}..." if OPENAI_API_KEY else "No API key loaded")
-
-# Initialize SQLite connection for full chunk text
-SQLITE_DB = Path(__file__).parent.parent / "ecm_rag.db"
-sqlite_conn = None
-
-def get_sqlite_conn():
-    """Get SQLite connection, lazy-loaded."""
-    global sqlite_conn
-    if sqlite_conn is None and SQLITE_DB.exists():
-        sqlite_conn = sqlite3.connect(str(SQLITE_DB), check_same_thread=False)
-    return sqlite_conn
-
-
-def get_chunk_text_from_db(qdrant_id: str) -> Optional[str]:
-    """Get full chunk text from SQLite if available."""
-    try:
-        conn = get_sqlite_conn()
-        if not conn:
-            return None
-        cursor = conn.cursor()
-        cursor.execute("SELECT text FROM chunks WHERE qdrant_id = ?", (qdrant_id,))
-        row = cursor.fetchone()
-        return row[0] if row else None
-    except Exception as e:
-        logger.debug(f"SQLite lookup failed for {qdrant_id}: {e}")
-        return None
 
 # ========================
 # Pydantic Models
@@ -150,18 +123,13 @@ def search_documents(query: str, top_k: int = 5) -> List[dict]:
         formatted_results = []
         for point in results:
             payload = point.get('payload', {})
-            point_id = point.get('id')
             
-            # Try to get full text from SQLite first
-            text = get_chunk_text_from_db(str(point_id))
-            
-            # Fall back to payload text or preview
-            if not text:
-                text = payload.get('text', '') or payload.get('text_preview', '')
+            # Get full text directly from Qdrant payload (now stored there!)
+            text = payload.get('text', '') or payload.get('text_preview', '')
             
             formatted_results.append({
                 'filename': payload.get('filename', 'Unknown'),
-                'text': text[:1000],  # Use up to 1000 chars for LLM context
+                'text': text,  # Full chunk text from Qdrant
                 'score': point.get('score', 0)
             })
         

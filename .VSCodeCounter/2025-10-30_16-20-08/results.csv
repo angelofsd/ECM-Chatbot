@@ -1,0 +1,58 @@
+"filename", "language", "Python", "pip requirements", "Markdown", "MS SQL", "Properties", "Shell Script", "Ignore", "YAML", "TypeScript", "JSON with Comments", "JSON", "TypeScript JSX", "PostCSS", "JavaScript", "comment", "blank", "total"
+"c:\Users\angela\dev\ECM-Chatbot\.dockerignore", "Ignore", 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 8, 8, 44
+"c:\Users\angela\dev\ECM-Chatbot\AGENTS.md", "Markdown", 0, 0, 220, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 289
+"c:\Users\angela\dev\ECM-Chatbot\OPENAI_SETUP.md", "Markdown", 0, 0, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 162
+"c:\Users\angela\dev\ECM-Chatbot\PHASE3_SUMMARY.md", "Markdown", 0, 0, 238, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 309
+"c:\Users\angela\dev\ECM-Chatbot\PROJECT_STRUCTURE.md", "Markdown", 0, 0, 338, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 423
+"c:\Users\angela\dev\ECM-Chatbot\QUICKREF.md", "Markdown", 0, 0, 102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 143
+"c:\Users\angela\dev\ECM-Chatbot\README.md", "Markdown", 0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 311
+"c:\Users\angela\dev\ECM-Chatbot\STATUS_REPORT.md", "Markdown", 0, 0, 323, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 79, 402
+"c:\Users\angela\dev\ECM-Chatbot\TESTING.md", "Markdown", 0, 0, 126, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42, 168
+"c:\Users\angela\dev\ECM-Chatbot\TEST_RESULTS.md", "Markdown", 0, 0, 170, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 233
+"c:\Users\angela\dev\ECM-Chatbot\api\__init__.py", "Python", 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 2, 12
+"c:\Users\angela\dev\ECM-Chatbot\api\answer_generator.py", "Python", 147, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 35, 251
+"c:\Users\angela\dev\ECM-Chatbot\api\app_simple.py", "Python", 206, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 29, 265
+"c:\Users\angela\dev\ECM-Chatbot\api\config.py", "Python", 75, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 52, 24, 151
+"c:\Users\angela\dev\ECM-Chatbot\api\db.py", "Python", 179, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 66, 65, 310
+"c:\Users\angela\dev\ECM-Chatbot\api\embeddings.py", "Python", 119, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 54, 40, 213
+"c:\Users\angela\dev\ECM-Chatbot\api\extractors\__init__.py", "Python", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 1, 12
+"c:\Users\angela\dev\ECM-Chatbot\api\extractors\email_extractor.py", "Python", 178, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 72, 37, 287
+"c:\Users\angela\dev\ECM-Chatbot\api\ingest.py", "Python", 326, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 109, 98, 533
+"c:\Users\angela\dev\ECM-Chatbot\api\ingest_pdf.py", "Python", 223, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 86, 62, 371
+"c:\Users\angela\dev\ECM-Chatbot\api\llm.py", "Python", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 28, 232
+"c:\Users\angela\dev\ECM-Chatbot\api\main.py", "Python", 177, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 62, 328
+"c:\Users\angela\dev\ECM-Chatbot\api\requirements.txt", "pip requirements", 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 11, 55
+"c:\Users\angela\dev\ECM-Chatbot\api\retriever.py", "Python", 195, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 119, 65, 379
+"c:\Users\angela\dev\ECM-Chatbot\api\security.py", "Python", 94, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 36, 201
+"c:\Users\angela\dev\ECM-Chatbot\docker-compose.yml", "YAML", 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 4, 42
+"c:\Users\angela\dev\ECM-Chatbot\docker-init-db.sh", "Shell Script", 0, 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2, 11
+"c:\Users\angela\dev\ECM-Chatbot\fix_qdrant_full_text.py", "Python", 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 31, 172
+"c:\Users\angela\dev\ECM-Chatbot\ingest_emails_batch.py", "Python", 112, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 35, 176
+"c:\Users\angela\dev\ECM-Chatbot\ingest_pool.py", "Python", 172, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 54, 267
+"c:\Users\angela\dev\ECM-Chatbot\init-db.sql", "MS SQL", 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 9
+"c:\Users\angela\dev\ECM-Chatbot\ocr_prepare.py", "Python", 154, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 21, 188
+"c:\Users\angela\dev\ECM-Chatbot\pg_hba.conf", "Properties", 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 10
+"c:\Users\angela\dev\ECM-Chatbot\quick_fix_qdrant.py", "Python", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 13, 64
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_qdrant_full_text.py", "Python", 117, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 37, 178
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_simple.py", "Python", 85, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 26, 129
+"c:\Users\angela\dev\ECM-Chatbot\rebuild_vectors.py", "Python", 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 22, 116
+"c:\Users\angela\dev\ECM-Chatbot\requirements.txt", "pip requirements", 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 15
+"c:\Users\angela\dev\ECM-Chatbot\test_basic.py", "Python", 81, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 11, 105
+"c:\Users\angela\dev\ECM-Chatbot\test_e2e.py", "Python", 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 22, 136
+"c:\Users\angela\dev\ECM-Chatbot\test_llm_phase2b.py", "Python", 97, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 26, 137
+"c:\Users\angela\dev\ECM-Chatbot\test_system.py", "Python", 111, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 19, 147
+"c:\Users\angela\dev\ECM-Chatbot\ui\README.md", "Markdown", 0, 0, 133, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 191
+"c:\Users\angela\dev\ECM-Chatbot\ui\app\globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 56, 0, 0, 4, 60
+"c:\Users\angela\dev\ECM-Chatbot\ui\app\layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 4, 23
+"c:\Users\angela\dev\ECM-Chatbot\ui\app\page.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 95, 0, 0, 6, 13, 114
+"c:\Users\angela\dev\ECM-Chatbot\ui\components\ChatInput.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 62, 0, 0, 3, 9, 74
+"c:\Users\angela\dev\ECM-Chatbot\ui\components\ChatMessage.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 74, 0, 0, 3, 8, 85
+"c:\Users\angela\dev\ECM-Chatbot\ui\next-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2, 6
+"c:\Users\angela\dev\ECM-Chatbot\ui\next.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 1, 2, 11
+"c:\Users\angela\dev\ECM-Chatbot\ui\package-lock.json", "JSON", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6343, 0, 0, 0, 0, 1, 6344
+"c:\Users\angela\dev\ECM-Chatbot\ui\package.json", "JSON", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 1, 38
+"c:\Users\angela\dev\ECM-Chatbot\ui\postcss.config.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 1, 7
+"c:\Users\angela\dev\ECM-Chatbot\ui\tailwind.config.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 53, 0, 0, 0, 0, 0, 1, 1, 55
+"c:\Users\angela\dev\ECM-Chatbot\ui\tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 0, 0, 0, 0, 57, 0, 0, 0, 0, 0, 1, 58
+"c:\Users\angela\dev\ECM-Chatbot\update_payloads.py", "Python", 55, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 15, 79
+"Total", "-", 3356, 46, 2004, 2, 5, 6, 28, 38, 53, 57, 6380, 250, 56, 14, 1216, 1620, 15131
