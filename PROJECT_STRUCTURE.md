@@ -150,6 +150,62 @@ It uses a local **RAG pipeline** with:
 
 ---
 
+## 4d. Completed: Phase 3b — Text File (.txt) Ingestion ✅
+
+**Phase 3b Status**: ✅ **COMPLETE (Nov 3-4, 2025)** — Text file ingestion for Teams call transcripts operational.
+
+| Component | Status |
+|-----------|--------|
+| `api/ingest.py` | ✅ `extract_text_file()` with UTF-8/latin-1 fallback |
+| `api/ingest.py` | ✅ `extract_content()` updated to handle `source_type='text'` |
+| `ingest_pool.py` | ✅ `discover_remaining_text_files()` with incremental support |
+| `ingest_pool.py` | ✅ CLI args: `--text-dir`, `--max-text` |
+| Module docstrings | ✅ Updated to document text file support |
+
+**Text File Ingestion Features**:
+- **Format**: Plain `.txt` files (UTF-8 with latin-1 fallback)
+- **Incremental**: Queries Postgres for processed documents, skips duplicates
+- **Parallel processing**: Uses existing ProcessPoolExecutor with configurable workers
+- **Source tracking**: Stored as `source_type='text'` in database
+- **Metadata**: Extracts filename, uses filename stem as title
+
+**Ingestion Results** (Nov 3):
+- **3 transcripts ingested**: box, opentext, newgen discovery calls
+- **72 text chunks** created (17 + 27 + 28 chunks respectively)
+- **Ingestion time**: ~3 minutes with 4 workers
+- **Success rate**: 100%
+
+**Combined Dataset** (Nov 4, 2025):
+- **255 total documents** (53 PDFs + 199 emails + 3 transcripts)
+- **1,543 total chunks** (665 PDFs + 806 emails + 72 transcripts)
+- **1,543 Qdrant vectors** (OpenAI text-embedding-3-small, 1536d)
+- **Source types**: `pdf` (53), `email` (199), `text` (3)
+
+**CLI Usage**:
+```bash
+# Ingest text files from directory
+python ingest_pool.py --text-dir "C:/ecm-staging/transcripts" --workers 4
+
+# Limit number of text files
+python ingest_pool.py --text-dir "C:/ecm-staging/transcripts" --max-text 10
+
+# Dry run to preview
+python ingest_pool.py --text-dir "C:/ecm-staging/transcripts" --dry-run
+```
+
+**Transcript Files Ingested**:
+- `box_discoverycall_11032025.txt` (17 chunks)
+- `opentext_discovercall_10292025.txt` (27 chunks)
+- `newgen_discoverycall_10302025.txt` (28 chunks)
+
+**Verification** (Nov 4):
+- ✅ Transcripts searchable in chatbot
+- ✅ Returns detailed content for discovery call queries
+- ✅ Citations properly track transcript sources
+- ✅ Incremental ingestion skips already-processed files
+
+---
+
 ## 5. Completed: Phase 3 — Frontend (Next.js) ✅
 
 **Phase 3 Status**: ✅ **COMPLETE (Oct 29, 2025)** — Production-ready Next.js 14 frontend deployed locally.
@@ -370,16 +426,17 @@ npm start             # Serve built app
 2. ✅ **Phase 2a Complete** — 199 emails indexed with 806 chunks
 3. ✅ **Phase 2b Complete** — LLM integration with GPT-5 mini, citation tracking
 4. ✅ **Phase 3 Complete** — Next.js 14 frontend with chat UI, components, API client
-5. **Phase 4 Next**: End-to-end testing & deployment
-   - Test frontend + backend integration locally
-   - Verify streaming responses work in UI
-   - Add authentication (demo token or Azure AD)
-   - Docker Compose for full stack orchestration
-6. **Phase 5**: Monitoring & enhancements
-   - Query logging and metrics
-   - Citation accuracy metrics
-   - Document ranking analysis
-   - User feedback loop
+5. ✅ **Phase 3b Complete** — Text file (.txt) ingestion for transcripts (3 files, 72 chunks)
+6. **Phase 4 (Future)**: Streaming responses
+   - Backend: StreamingResponse with Server-Sent Events (SSE)
+   - Frontend: Streaming fetch reader or EventSource
+   - Complexity: 6/10 difficulty, 2-3 hour estimate
+   - Benefits: Better UX, faster perceived response
+7. **Phase 5 (Future)**: Additional enhancements
+   - Improved date handling in semantic search
+   - Word document (.docx) support
+   - Metadata enrichment (meeting attendees, topics)
+   - Hybrid search (semantic + keyword for dates)
 
 ---
 
@@ -418,5 +475,5 @@ docker exec ecm_postgres psql -U postgres -d ecm_rag -c "
 
 ---
 
-**Last Updated**: Oct 29, 2025  
-**Status**: ✅ Phase 1-3 Complete — 252 documents indexed (53 PDFs + 199 emails), 1,471 chunks, LLM integration ready, Next.js frontend deployed
+**Last Updated**: Nov 4, 2025  
+**Status**: ✅ Phase 1-3b Complete — 255 documents indexed (53 PDFs + 199 emails + 3 transcripts), 1,543 chunks, LLM integration ready, Next.js frontend deployed, text file ingestion operational

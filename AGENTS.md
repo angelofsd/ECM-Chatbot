@@ -6,7 +6,7 @@ This document is a "constitution" for development on this project, ensuring that
 
 Build a **local RAG chatbot** that answers questions about ECM replacement using OCR'd internal documents, with proper ACL enforcement and citations.
 
-## Current Status (as of Oct 28, 2025)
+## Current Status (as of Nov 4, 2025)
 
 ✅ **Phase 0 Complete:**
 - 262 PDFs processed via `ocr_prepare.py`
@@ -15,13 +15,30 @@ Build a **local RAG chatbot** that answers questions about ECM replacement using
 - Output: `C:\ecm-staging\04_text_ready` + inventory.csv
 
 ✅ **Phase 1 Complete:**
-- **261 documents indexed** (99.6% success rate)
-- **3,122 text chunks** with OpenAI embeddings (text-embedding-3-small, 1536d)
-- **19 minutes total ingestion time** (20 parallel workers)
+- **252 documents indexed** (53 PDFs + 199 emails)
+- **1,471 text chunks** with OpenAI embeddings (text-embedding-3-small, 1536d)
 - Production-ready pipeline with memory optimization and resume capability
 - Tools: `/ingest_pool.py`, `/rebuild_vectors.py`
 
-🚀 **Phase 2 Next:** LLM integration (`api/llm.py` + `api/answer_generator.py`)
+✅ **Phase 2 Complete:**
+- LLM integration (`api/llm.py` + `api/answer_generator.py`)
+- Full text storage in Qdrant (no dual-lookup architecture)
+- GPT-4o-mini responding with contextual answers and citations
+
+✅ **Phase 3 Complete:**
+- Next.js 14 frontend with chat UI deployed locally
+- Real-time chat interface with expandable citations
+- Frontend on port 3000, backend on port 8000
+
+✅ **Phase 3b Complete (Nov 3-4, 2025):**
+- **Text file (.txt) ingestion support** for Teams call transcripts
+- **3 transcripts indexed**: box, opentext, newgen discovery calls (72 chunks)
+- **255 total documents** (53 PDFs + 199 emails + 3 transcripts)
+- **1,543 total chunks** (1,471 + 72 from transcripts)
+- Incremental ingestion: skips already-processed files
+- CLI: `python ingest_pool.py --text-dir <path> --max-text N`
+
+💡 **Next Consideration:** Streaming response implementation (6/10 difficulty, 2-3 hours)
 
 ## Key Principles
 

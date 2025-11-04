@@ -1,9 +1,9 @@
 """
-Unified ingestion pipeline for multiple source types (PDFs, emails, etc.).
+Unified ingestion pipeline for multiple source types (PDFs, emails, text files, etc.).
 
 Workflow:
 1. Scan configured source directories
-2. Detect file type (PDF, email, etc.)
+2. Detect file type (PDF, email, text, etc.)
 3. Extract content using appropriate extractor
 4. Chunk → embed → store in Qdrant + Postgres
 5. Track source type and department
@@ -11,6 +11,7 @@ Workflow:
 Supports:
   - PDFs: C:\\ecm-staging\\04_text_ready
   - Emails: C:\\ecm-staging\\outlook\\*
+  - Text files: Plain .txt files (transcripts, notes, etc.)
   - Extensible for other formats
 """
 
@@ -185,6 +186,24 @@ def extract_pdf_text(pdf_path: Path) -> str:
         gc.collect()
 
 
+def extract_text_file(txt_path: Path) -> str:
+    """Extract text from plain text file (.txt)."""
+    try:
+        with open(txt_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    except UnicodeDecodeError:
+        # Fallback to latin-1 if UTF-8 fails
+        try:
+            with open(txt_path, 'r', encoding='latin-1') as f:
+                return f.read().strip()
+        except Exception as e:
+            logger.error(f"Failed to read {txt_path}: {e}")
+            return ""
+    except Exception as e:
+        logger.error(f"Failed to extract from {txt_path}: {e}")
+        return ""
+
+
 def extract_content(file_path: Path, source_type: str) -> Optional[dict]:
     """
     Extract content from any supported file type.
@@ -204,6 +223,17 @@ def extract_content(file_path: Path, source_type: str) -> Optional[dict]:
     
     elif source_type == "email":
         return extract_email(file_path)
+    
+    elif source_type == "text":
+        text = extract_text_file(file_path)
+        if not text:
+            return None
+        return {
+            "text": text,
+            "title": file_path.stem,
+            "source_type": "text",
+            "metadata": {"filename": file_path.name},
+        }
     
     else:
         logger.warning(f"Unknown source type: {source_type}")

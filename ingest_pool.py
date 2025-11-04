@@ -134,6 +134,40 @@ def discover_remaining_emails(email_dir: Path, limit: Optional[int] = None) -> L
     return tasks
 
 
+def discover_remaining_text_files(text_dir: Path, limit: Optional[int] = None) -> List[IngestionTask]:
+    """Collect .txt file paths that have not yet been ingested."""
+    ensure_tables()
+
+    if not text_dir.exists():
+        raise FileNotFoundError(f"Text directory does not exist: {text_dir}")
+
+    all_text_files = sorted(text_dir.glob("**/*.txt"))
+
+    session = db.get_session()
+    try:
+        processed_paths = {
+            row.source_path for row in session.query(Document.source_path).all()
+        }
+    finally:
+        session.close()
+
+    tasks: List[IngestionTask] = []
+    for file_path in all_text_files:
+        if str(file_path) in processed_paths:
+            continue
+        tasks.append(
+            IngestionTask(
+                path=str(file_path),
+                department=guess_department_from_path(file_path),
+                source_type="text",
+            )
+        )
+        if limit and len(tasks) >= limit:
+            break
+
+    return tasks
+
+
 def _worker_initializer(api_key: str) -> None:
     """Initializer executed in each worker process.
     
@@ -220,7 +254,7 @@ def run_pool(tasks: Iterable[IngestionTask], workers: int, dry_run: bool) -> Non
 
 def main() -> None:
     """CLI entrypoint."""
-    parser = argparse.ArgumentParser(description="Parallel PDF/email ingestion runner")
+    parser = argparse.ArgumentParser(description="Parallel PDF/email/text ingestion runner")
     parser.add_argument(
         "--workers",
         type=int,
@@ -243,6 +277,16 @@ def main() -> None:
         help="Ingest at most N emails this run",
     )
     parser.add_argument(
+        "--text-dir",
+        type=str,
+        help="Ingest text files from this directory (e.g., C:/ecm-staging/transcripts)",
+    )
+    parser.add_argument(
+        "--max-text",
+        type=int,
+        help="Ingest at most N text files this run",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="List documents that would be ingested without executing",
@@ -251,13 +295,19 @@ def main() -> None:
 
     tasks: List[IngestionTask] = []
 
-    # Collect PDF tasks if --email-dir not specified (default behavior)
-    if not args.email_dir:
+    # Collect PDF tasks if no specific directory specified (default behavior)
+    if not args.email_dir and not args.text_dir:
         tasks.extend(discover_remaining_pdfs(OCR_OUTPUT_DIR, limit=args.max_pdfs))
-    else:
-        # Collect email tasks
+    
+    # Collect email tasks if specified
+    if args.email_dir:
         email_path = Path(args.email_dir)
         tasks.extend(discover_remaining_emails(email_path, limit=args.max_emails))
+    
+    # Collect text file tasks if specified
+    if args.text_dir:
+        text_path = Path(args.text_dir)
+        tasks.extend(discover_remaining_text_files(text_path, limit=args.max_text))
 
     run_pool(tasks, workers=max(1, args.workers), dry_run=args.dry_run)
 
